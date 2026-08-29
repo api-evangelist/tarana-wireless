@@ -1,0 +1,39 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  https://portal.tcs.taranawireless.com/operator-portal/env-config.js (RELEASE_NOTES_URL) and
+  a direct probe of the release-notes topic on the support portal
+name: Tarana Cloud Suite — release notes
+published: true
+gated: true
+url: https://support.taranawireless.com/s/topic/0TO8X00000114ukWAA/release-notes
+url_source: >-
+  Declared verbatim by Tarana as RELEASE_NOTES_URL in the operator portal's anonymous runtime
+  configuration; the operator portal links users to it from inside the product.
+scheme: dated release-notes articles on the Salesforce support portal, grouped under a topic
+entries: []
+entries_note: >-
+  NO ENTRIES COULD BE CAPTURED, and none are invented. The release-notes topic is a Salesforce
+  Experience Cloud page: the HTML that comes back to an anonymous client is a 443KB Lightning
+  application shell with no article content in it, and the guest knowledge REST API
+  (/services/data/v60.0/support/knowledgeArticles) returns 401 INVALID_SESSION_ID. There is
+  therefore no dated entry list, no version list and no breaking-change history readable by
+  any machine, including this one. The changelog exists and Tarana points customers at it; it
+  is simply not published in a form anything can read without a tenant login.
+evidence:
+- url: https://support.taranawireless.com/s/topic/0TO8X00000114ukWAA/release-notes
+  status: 200
+  note: 200 returns a client-rendered Lightning shell, not article content.
+- url: https://support.taranawireless.com/services/data/v60.0/support/knowledgeArticles?q=northbound
+  status: 401
+  note: '[{"message":"Authorization required","errorCode":"INVALID_SESSION_ID"}]'
+related:
+- kind: device software catalogue
+  note: >-
+    The one version history that IS anonymously readable is the radio software catalogue —
+    146 versions with base-node/remote-node compatibility flags — at
+    https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+    (window._SOFTWARE_VERSIONS_). See lifecycle/tarana-wireless-lifecycle.yml.
+- kind: incident history
+  url: https://status.taranawireless.com/pages/history/63337aa16366bf053fa30260
+  status: 200

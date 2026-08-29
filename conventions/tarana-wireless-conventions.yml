@@ -1,0 +1,201 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  https://portal.tcs.taranawireless.com/operator-portal/env-config.js and
+  https://portal.tcs.taranawireless.com/operator-portal/common-config.js (both anonymous),
+  plus live probes of api.tcs.taranawireless.com and portal.tcs.taranawireless.com/northbound
+name: Tarana Cloud Suite — cross-cutting API conventions
+note: >-
+  HONEST SCOPE WARNING. The TCS northbound OpenAPI is RBAC-gated, so none of this was derived
+  from a contract. Every entry below is either observed on a live anonymous response or read
+  from configuration Tarana serves publicly. Where a convention could not be established, it
+  says unknown rather than carrying a plausible default — a guessed idempotency header or a
+  guessed pagination parameter is worse than an admitted gap, because an agent would act on
+  it.
+auth_style:
+  summary: >-
+    RBAC behind an operator tenant. Portal users authenticate through an OAuth 2.0
+    authorization server at idp.tcs.taranawireless.com; the northbound API credential type is
+    not publicly documented.
+  detail: authentication/tarana-wireless-authentication.yml
+error_envelope:
+  method: probed
+  observed_at: https://api.tcs.taranawireless.com/
+  content_type: application/json
+  rfc9457: false
+  shape:
+    data: null on error, payload on success
+    error:
+      code: integer, mirrors the HTTP status
+      message: human-readable string
+      status: short machine label
+  example:
+    data: null
+    error:
+      code: 403
+      message: The HTTP method or resources may not be supported.
+      status: Unsupported API
+  detail: errors/tarana-wireless-error-codes.yml
+  note: >-
+    A data/error envelope means the HTTP status is duplicated in the body; a client must read
+    error.status, not only the status line, to distinguish gateway refusals from application
+    errors. Whether the northbound API under /northbound uses this same envelope could not be
+    verified — the gateway host and the portal host are different edges.
+idempotency:
+  supported: unknown
+  header: null
+  scope: null
+  retention: null
+  note: >-
+    NOT DETERMINED. No idempotency key header, replay window or retention policy is stated on
+    any anonymously reachable Tarana surface, and the spec that would show one is gated. This
+    matters more than usual here: the northbound API performs device reboots, software
+    upgrades, spectrum grant changes and subscriber provisioning, all of which are expensive
+    to double-fire. Recorded as unknown; not asserted either way.
+pagination:
+  style: unknown
+  parameters: null
+  response_fields: null
+  observed_client_limits:
+    source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+    note: >-
+      These are the first-party portal's own page sizes, published in THRESHOLD_VALUES. They
+      are strong evidence that the backing API is page-size parameterised, but they are not
+      documented northbound API limits and must not be read as such.
+    values:
+      devices_nis_data_page_size: 5000
+      orphan_bns_page_size: 5000
+      available_bns_page_size: 5000
+      devices_latest_kpi_page_size: 2000
+      devices_aggregate_kpi_page_size: 2000
+      devices_kpi_default_page_size: 1000
+      devices_in_table: 20000
+      devices_in_map: 2048
+      alarms_in_table: 2048
+      users_in_table: 5000
+      max_devices_to_ack_nack: 1000
+      max_allowed_users_for_bulk_action: 100
+      max_allowed_slas: 200
+      data_points: 1000
+field_expansion:
+  supported: unknown
+metadata:
+  supported: unknown
+request_id_tracing:
+  supported: true
+  method: probed
+  header: x-request-id
+  evidence: >-
+    Observed on the 301 from https://tcs.taranawireless.com/ — the istio-envoy ingress emits
+    an x-request-id UUID on responses (example 498a4bf9-087e-4721-ae8d-cceea7d1aaa6). Whether
+    a client-supplied x-request-id is honoured and echoed is not documented.
+versioning:
+  api_path_version: >-
+    The internal service map exposes /api/tcs/v1/... and /api/nqs/v1/... paths, so the
+    platform versions in the URL path at v1. The public northbound base path is
+    /northbound with no version segment observed.
+  device_software_scheme: >-
+    Radio software is versioned as SYS.<hw-arch>.<node-role>.<variant>.<major>.<minor>.<patch>.<build>,
+    e.g. SYS.A3.R10.XXX.3.013.000.00 for a remote node and SYS.A4.B10.XXX.4.931.019.02 for a
+    G2 base node. 146 versions are enumerated in the portal config, each flagged for base-node
+    and remote-node compatibility.
+  portal_version: 0.9 (window._env_.APP_VERSION)
+  detail: lifecycle/tarana-wireless-lifecycle.yml
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: unknown
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header was observed on any anonymous
+    response, and no limits are documented. See rate-limits/tarana-wireless-rate-limits.yml.
+webhooks:
+  supported: true
+  custom_headers_max: 3
+  secret: operator-set secret key
+  signature_scheme: unknown
+  detail: asyncapi/tarana-wireless-webhooks.yml
+data_retention:
+  method: probed
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+  note: >-
+    Published retention windows are a hard boundary on what any integration can query
+    historically.
+  windows:
+  - series: event log
+    days: 399
+  - series: metrics L0 (raw / highest resolution)
+    days: 30
+  - series: metrics L1
+    days: 90
+  - series: metrics L2 (coarsest)
+    days: 395
+telemetry:
+  model: device-to-cloud dial-out subscription
+  default_sample_interval_seconds: 60
+  time_of_transmission_sample_interval_seconds: 15
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+reversibility:
+  grade: documented
+  na: false
+  note: >-
+    GRADED "documented", NOT "verified", and the distinction is deliberate. TCS clearly has
+    reversible write operations — its own event vocabulary names the reversal events — but
+    Tarana publishes no window for any of them on an anonymously reachable surface, and this
+    pipeline will not invent one. An agent must treat every window below as unknown and
+    confirm it against the TCS Administration Guide before acting.
+  evidence_source: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+  write_surfaces:
+  - action: Alert / alarm acknowledgement
+    reversal: Un-acknowledge
+    reversal_evidence: >-
+      ALARM_OPERATIONS event type; the portal exposes an acknowledge/NACK pair with a
+      MAX_DEVICES_TO_ACK_NACK bulk cap of 1000.
+    window: unknown
+    operation_id: null
+  - action: Device software upgrade
+    reversal: Boot-bank switchover (revert to the previous image)
+    reversal_evidence: >-
+      BOOTBANK_SWITCH event type and the boot-bank-switchover alarm code. Radios hold two
+      boot banks, so the previous image remains bootable.
+    window: unknown
+    window_note: >-
+      How long the previous image is retained in the inactive bank before it is overwritten by
+      a subsequent upgrade is not published.
+    operation_id: null
+  - action: Auto-upgrade schedule
+    reversal: Cancel before the scheduled start
+    reversal_evidence: >-
+      AUTO_UPGRADE event type carries startTime and endTime fields on the notification
+      payload, so the schedule is a window an operator can act inside.
+    window: 'stated as a schedule, not as a reversal window'
+    operation_id: null
+  - action: CBRS spectrum grant
+    reversal: Grant relinquishment
+    reversal_evidence: GRANT_RELINQUISHMENT and REACQUIRE_SPECTRUM event types.
+    window: unknown
+    window_note: >-
+      Governed by the SAS heartbeat/grant lifecycle (WInnForum SAS-CBSD), not by a
+      Tarana-stated window.
+    operation_id: null
+  - action: Radio carrier mute
+    reversal: Carrier enable
+    reversal_evidence: >-
+      RADIO_CARRIER_MUTED and RADIO_CARRIER_ENABLED are both first-class alert types.
+    window: none required (symmetric operation)
+    operation_id: null
+  - action: Device removal from the network
+    reversal: unknown
+    reversal_evidence: >-
+      DEVICE_REMOVED is an event type; no restore or undelete counterpart appears in the
+      published vocabulary.
+    window: unknown
+  - action: User / operator management changes
+    reversal: unknown
+    reversal_evidence: USER_MANAGEMENT_OPERATIONS and OPERATOR_MANAGEMENT_OPERATIONS event types.
+    window: unknown
+dry_run_mode:
+  supported: unknown
+  note: >-
+    TCS ships diagnostic operations (link round-trip and downlink rate tests, cable test,
+    speed test) with published parameter ranges, which let an operator rehearse a link before
+    committing traffic. That is diagnostic tooling, not a dry-run mode on write operations, so
+    it is not counted as one.

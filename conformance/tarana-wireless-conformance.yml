@@ -1,0 +1,182 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  https://portal.tcs.taranawireless.com/operator-portal/common-config.js,
+  https://portal.tcs.taranawireless.com/operator-portal/env-config.js,
+  https://api.status.io/1.0/status/63337aa16366bf053fa30260,
+  https://support.taranawireless.com/.well-known/openid-configuration,
+  https://portal.tcs.taranawireless.com/.well-known/security.txt
+name: Tarana Wireless — standards conformance
+note: >-
+  Every entry is judged against something Tarana actually serves, not against a marketing
+  claim. Where the evidence establishes the SHAPE of a standard without proving the model
+  behind it, conforms is false or partial and the note says why. No standard was added to
+  fill a slot.
+domain_standards:
+- id: winnforum-sas-cbsd
+  name: WInnForum CBRS SAS-CBSD Protocol (WINNF-TS-0016) / FCC Part 96 Citizens Broadband Radio Service
+  conforms: true
+  confidence: high
+  evidence: >-
+    The TCS event vocabulary implements the full SAS-CBSD message lifecycle as first-class
+    event types: REGISTRATION_VALIDATION, GRANT_VALIDATION, HEARTBEAT_VALIDATION,
+    HEARTBEAT_SUCCESS, HEARTBEAT_FAILURE, GRANT_RELINQUISHMENT, REACQUIRE_SPECTRUM and
+    DEREGISTRATION_VALIDATION — the SAS-CBSD verbs, in order. The portal config enumerates the
+    certified SAS administrators an operator can bind to (Google, Federated Wireless, and
+    Tarana's own), and the public status page runs "CBRS SAS Domain Proxy" as a monitored
+    component alongside "Google SAS Portal (External)" and "Federated SAS Portal (External)".
+    Webhook payloads carry cbsd_grant_lower_frequency_mhz, cbsd_grant_upper_frequency_mhz and
+    cbsd_grant_master_id, so grant state is exposed to integrators.
+  why_it_matters: >-
+    A US CBRS operator already speaks SAS-CBSD. Tarana acting as a certified Domain Proxy
+    means the operator inherits spectrum coordination rather than building a bilateral SAS
+    integration.
+  sources:
+  - https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+  - https://api.status.io/1.0/status/63337aa16366bf053fa30260
+- id: afc-6ghz
+  name: FCC 6 GHz Automated Frequency Coordination (AFC) — standard-power unlicensed
+  conforms: true
+  confidence: high
+  evidence: >-
+    "AFC Domain Proxy" is a monitored component on the public status page, with
+    "Comsearch AFC (External)" and "Federated Wireless AFC (External)" — two FCC-approved AFC
+    system operators — monitored as external dependencies beside it. The portal's regulatory
+    config carries domains ETSI, FCC and ROW and the 5/6 GHz channel plan.
+  sources:
+  - https://api.status.io/1.0/status/63337aa16366bf053fa30260
+  - https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+- id: itu-t-x733
+  name: ITU-T X.733 alarm reporting (probable cause / event type / perceived severity)
+  conforms: true
+  confidence: high
+  evidence: >-
+    All 709 published alarm definitions are typed with the X.733 event-type vocabulary —
+    COMMUNICATION, ENVIRONMENTAL, EQUIPMENT, PROCESSING_ERR (processing error),
+    OPERATIONAL_VIOLATION and OTHER — and carry X.733 perceived-severity values CRITICAL,
+    MAJOR, MINOR and WARNING. This is the same alarm model 3GPP TS 32.111 and the TM Forum
+    fault-management interfaces build on, so an operator's existing FM/OSS mediation maps
+    directly.
+  location: 'window._ALARMS_CONFIG_[].type and [].severity'
+  sources:
+  - https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+  - errors/tarana-wireless-error-codes.yml
+- id: yang-instance-paths
+  name: YANG (RFC 7950) instance-identifier path syntax for managed resources
+  conforms: true
+  confidence: high
+  evidence: >-
+    704 of the 709 alarm definitions bind to a resource expressed as a YANG instance path with
+    list-key predicates, e.g. /system/software/modules/module[name=aaa_manager] and
+    /platform/components/component[name=sys]/state/temperature/max/avg. The threshold-crossing
+    alert templates use a field literally named yangpath. The device data model is a YANG
+    model, and its paths are addressable from the alarm and TCA surfaces.
+  sources:
+  - https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+- id: openconfig-models
+  name: OpenConfig device data models
+  conforms: false
+  confidence: medium
+  evidence: >-
+    NOT ESTABLISHED, recorded deliberately rather than assumed. The path structure strongly
+    resembles OpenConfig — /platform/components/component[name=…]/state/… mirrors
+    openconfig-platform's container/state layout — but the top-level containers are Tarana's
+    own (/debug/calibration/…, /network/radios/radio[device-id=…]) and no OpenConfig module
+    name, revision or YANG file is published anywhere anonymously reachable. The convention is
+    OpenConfig-shaped; conformance to the published models is unproven.
+- id: gnmi-dial-out-telemetry
+  name: Streaming telemetry via dial-out subscription (gNMI-style sample subscriptions)
+  conforms: false
+  confidence: medium
+  evidence: >-
+    PARTIAL. The portal config declares dialout.subscription.sample.interval with a 60-second
+    default and a 15-second time-of-transmission series, and TCS runs distinct dial-out
+    services for metrics, alarms, RSSI and registration with DIALOUT and
+    DIAL-OUT-HEALTH-CHECK event types and dialout-failure / dialout-stuck /
+    dialout-unreachable alarms. The subscription-with-sample-interval model is gNMI's, but the
+    encoding and RPC are not stated and no .proto is published (the TaranaWireless GitHub org
+    has zero public repositories), so gNMI conformance cannot be asserted.
+standards:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    idp.tcs.taranawireless.com is an OAuth 2.0 authorization server (it rejects unknown paths
+    with "This URL doesn't exist on the authorization server"), and env-config names its
+    /oauth2/idpresponse callback. The Salesforce support portal publishes a full OAuth 2.0
+    authorization-server metadata document.
+- id: oidc
+  conforms: true
+  evidence: >-
+    https://support.taranawireless.com/.well-known/openid-configuration returns 200 with
+    complete OpenID Provider Metadata (issuer, authorization, token, userinfo, JWKS,
+    revocation, introspection, registration; RS256 id_token signing; DPoP algorithms
+    advertised). Scoped to the support portal — the TCS IdP publishes NO discovery document,
+    which is a real gap.
+  artifact: well-known/tarana-wireless-support-openid-configuration.json
+- id: rfc8414
+  name: OAuth 2.0 Authorization Server Metadata
+  conforms: true
+  evidence: Served by the support portal at the OIDC discovery path. Not served by the TCS IdP.
+- id: rfc9116
+  name: security.txt
+  conforms: true
+  evidence: >-
+    https://portal.tcs.taranawireless.com/.well-known/security.txt returns 200 with Contact,
+    Hiring and Preferred-Languages. Missing the RECOMMENDED Expires field and the optional
+    Policy, Encryption, Acknowledgments and Canonical fields.
+  artifact: well-known/tarana-wireless-security.txt
+- id: rfc9457
+  name: Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    The TCS API gateway returns a proprietary {data, error:{code, message, status}} envelope
+    with content-type application/json, not application/problem+json.
+- id: idempotency
+  conforms: false
+  evidence: >-
+    No idempotency key header is documented on any anonymously reachable surface and the spec
+    is gated. Recorded as not established, not as absent — see
+    conventions/tarana-wireless-conventions.yml.
+- id: pagination
+  conforms: false
+  evidence: >-
+    Page-size semantics are evident from the first-party portal's own limits, but no
+    pagination contract is published.
+- id: openapi
+  conforms: false
+  evidence: >-
+    An OpenAPI document demonstrably exists — Tarana's own portal config names a Swagger UI at
+    https://portal.tcs.taranawireless.com/northbound/swagger-ui.html — but that path and every
+    Swagger/OpenAPI sibling (v2/api-docs, v3/api-docs, swagger-resources, openapi.json,
+    swagger.json) return 403 "RBAC: access denied" to anonymous callers. Not published, rather
+    than not existing.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No AsyncAPI document is published by Tarana. The webhook payload contract IS published in
+    the portal config, and asyncapi/tarana-wireless-alerts-asyncapi.yml is a derived rendering
+    of it — clearly marked as such, and not to be read as a Tarana artifact.
+compliance_certifications: []
+compliance_note: >-
+  NO trust center and NO named certification (SOC 2, ISO 27001, PCI, HIPAA, FedRAMP) is
+  reachable. trust.taranawireless.com does not resolve; probe-security-programs.py found no
+  trust center; no certification badge or page appears on any anonymously readable Tarana
+  surface. The `Compliance` pointer is therefore NOT emitted in apis.yml — there is nothing to
+  point at. What Tarana does publish is regulatory/spectrum conformance (FCC Part 96 CBRS,
+  6 GHz AFC, ETSI), which is recorded above under domain_standards and is a different thing
+  from an information-security compliance program.
+regulatory_domains:
+  domains:
+  - ETSI
+  - FCC
+  - ROW
+  countries:
+  - MYS
+  - NGA
+  - USA
+  - ZAF
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+  note: >-
+    The regulatory domains and the country list the TCS device configuration currently
+    enumerates. This is the deployment footprint the product's own configuration admits to,
+    not a claim about where Tarana sells.

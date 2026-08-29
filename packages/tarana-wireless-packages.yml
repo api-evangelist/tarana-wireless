@@ -1,0 +1,43 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  npm registry search, PyPI, GitHub org https://github.com/TaranaWireless, and Tarana's own
+  documentation and support surfaces
+name: Tarana Wireless — client libraries and packages
+package_count: 0
+packages: []
+official_sdk_count: 0
+note: >-
+  Tarana publishes NO client library in any registry, and no first-party SDK of any kind. This
+  is a searched zero, not an unchecked field. The GitHub organisation github.com/TaranaWireless
+  exists and is claimed by the company (org id 5933638, display name "Tarana Wireless") but has
+  ZERO public repositories, so there is no source-distributed client either. Because there is
+  no package, there is no version and no publish date to record, and consequently no SDK-decay
+  signal is available for this provider — the usual strongest abandonment evidence in this
+  pipeline simply does not exist here. No `SDKs` pointer is emitted in apis.yml, since emitting
+  one would credit Tarana with client libraries it does not ship.
+registries_checked:
+- registry: npm
+  query: tarana, taranawireless
+  endpoint: https://registry.npmjs.org/-/v1/search
+  result: 0 matches
+  version: null
+- registry: PyPI
+  query: tarana
+  endpoint: https://pypi.org/pypi/tarana/json
+  status: 404
+  result: no package
+  version: null
+- registry: GitHub
+  org: https://github.com/TaranaWireless
+  status: 200
+  result: organisation exists, 0 public repositories
+  version: null
+third_party:
+- name: basuccess/maxcap-project
+  url: https://github.com/basuccess/maxcap-project
+  official: false
+  note: >-
+    The only public code found anywhere that touches Tarana: a third-party Python script that
+    extracts backhaul traffic data from TCS CSV exports. It is a CSV consumer, not an API
+    client, and it is not affiliated with Tarana.

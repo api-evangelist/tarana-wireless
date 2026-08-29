@@ -1,0 +1,2743 @@
+generated: '2026-08-29'
+method: searched
+source: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+name: Tarana Cloud Suite — webhook and event surface
+summary: TCS ships a configurable outbound webhook channel. An operator adds a webhook under Admin ->
+  Webhooks in the operator portal by supplying a name and a destination URL, optionally up to three custom
+  headers, and a secret key; TCS then POSTs a JSON alert notification to that URL whenever a subscribed
+  alert fires. The alert types and the exact payload field names are published by Tarana in the operator
+  portal's anonymous runtime configuration and are transcribed verbatim below. No AsyncAPI document is
+  published by Tarana; asyncapi/tarana-wireless-alerts-asyncapi.yml is a faithful AsyncAPI 3.0.0 rendering
+  of exactly this data, marked derived.
+delivery:
+  style: outbound HTTP webhook (operator-supplied destination URL)
+  direction: TCS -> operator endpoint
+  configuration_surface: TCS operator portal, Admin -> Webhooks -> Add New Webhook
+  payload_format: JSON
+  custom_headers_max: 3
+  custom_headers_source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js (THRESHOLD_VALUES.WEBHOOKS_HEADERS_COUNT
+    = 3)
+  secret: operator-set secret key, configured with the webhook
+  signature_scheme: null
+  retry_policy: null
+  note: Signature verification scheme, retry/backoff policy and delivery-log retention are not documented
+    on any anonymously reachable Tarana surface. Recorded as unknown rather than guessed.
+sibling_channels:
+- name: Email notification
+  note: The same alert definitions drive email notifications; each payload field carries both an email_field
+    and a webhook_field label.
+- name: Streaming telemetry dial-out
+  note: Radios push metrics, alarms, RSSI and registration to TCS over a dial-out subscription with a
+    configurable sample interval (default 60s, 15s for time-of-transmission series). This is device-to-cloud
+    and is not an operator-consumable channel.
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js (dialout.subscription.sample.interval)
+alert_types:
+  count: 12
+  items:
+  - alert_type: DEVICE_CONNECTED
+    display_name: Device Connected
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceDisconnectReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceFirstSeen
+    - deviceBootReason
+    - deviceDisconnectReason
+    - rebootReason
+  - alert_type: DEVICE_DISCONNECTED
+    display_name: Device Disconnected
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceDisconnectReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceFirstSeen
+    - deviceBootReason
+    - deviceDisconnectReason
+  - alert_type: RN_ETHERNET_PORT_IS_DOWN
+    display_name: RN Ethernet Port Down
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmType
+    - alarmName
+    - alarmDescription
+    - alarmCreatedAt
+    - alarmSeverity
+    - alarmState
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceBootReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmType
+    - alarmName
+    - alarmDescription
+    - alarmCreatedAt
+    - alarmSeverity
+    - alarmState
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+  - alert_type: RN_ETHERNET_PORT_IS_UP
+    display_name: RN Ethernet Port Up
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmType
+    - alarmName
+    - alarmDescription
+    - alarmCreatedAt
+    - alarmSeverity
+    - alarmState
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceBootReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmType
+    - alarmName
+    - alarmDescription
+    - alarmCreatedAt
+    - alarmSeverity
+    - alarmState
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+  - alert_type: BN_IS_NOT_REACHABLE
+    display_name: BN Not Reachable
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+  - alert_type: RADIO_CARRIER_MUTED
+    display_name: Radio Carrier Down
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - carrierDisabled
+    - connectedBnId
+    - lowerFrequencyMhz
+    - upperFrequencyMhz
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceBootReason
+    - carrierDisabled
+    - connectedBnId
+    - lowerFrequencyMhz
+    - upperFrequencyMhz
+  - alert_type: RADIO_CARRIER_ENABLED
+    display_name: Radio Carrier Up
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - carrierDisabled
+    - connectedBnId
+    - lowerFrequencyMhz
+    - upperFrequencyMhz
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceBootReason
+    - carrierDisabled
+    - connectedBnId
+    - lowerFrequencyMhz
+    - upperFrequencyMhz
+  - alert_type: CRITICAL_ALARM_RAISED
+    display_name: Alarm Raised
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceBootReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+  - alert_type: CRITICAL_ALARM_CLEARED
+    display_name: Alarm Cleared
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceBootReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+  - alert_type: NEW_DEVICE_INSTALLED
+    display_name: New Device Installed
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+    - connectedBnSerialNumber
+    - connectedBnHostname
+    - svlan
+    - rnMacAddress
+    - bnManagementIPv4
+    - bnManagementIPv6
+  - alert_type: NEW_BN_ONBOARDED
+    display_name: New BN Onboarded
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceSerialNumber
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - deviceSerialNumber
+    - deviceType
+    - operator
+  - alert_type: TCA_ALARM_TRIGGERED
+    display_name: TCA Alarm Triggered
+    required_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - deviceUptimeSeconds
+    - deviceBootReason
+    available_fields:
+    - alertName
+    - notificationGeneratedAt
+    - alarmName
+    - alarmSeverity
+    - alarmResource
+    - alarmState
+    - alarmDescription
+    - alarmCreatedAt
+    - deviceHostname
+    - deviceSerialNumber
+    - deviceType
+    - deviceSoftware
+    - operator
+    - region
+    - market
+    - site
+    - cell
+    - sector
+    - deviceUptimeSeconds
+    - deviceUptime
+    - deviceBootReason
+payload_fields:
+  count: 48
+  note: webhook_field is the literal JSON key TCS emits. field_type is the stored type, output_type is
+    the rendered type on the wire — note several integer-typed fields are emitted as formatted date or
+    display strings.
+  items:
+  - id: alert_name
+    webhook_field: alertName
+    display_name: Alert Name
+    description: Name of the alert
+    field_type: string
+    output_type: string
+    example: Test_Alert
+  - id: notification_generated_at
+    webhook_field: notificationGeneratedAt
+    display_name: Notification Generated At
+    description: Time when the notification was generated
+    field_type: string
+    output_type: date
+    example: 05 Feb 2024 14:54:32 UTC
+  - id: device_hostname
+    webhook_field: deviceHostname
+    display_name: Device Hostname
+    description: Hostname of the device
+    field_type: string
+    output_type: string
+    example: Test_Hostname
+  - id: device_serial_number
+    webhook_field: deviceSerialNumber
+    display_name: Device Serial Number
+    description: Serial number of the device
+    field_type: string
+    output_type: string
+    example: Test_SerialNumber
+  - id: device_type
+    webhook_field: deviceType
+    display_name: Device Type
+    description: Device Type
+    field_type: string
+    output_type: string
+    example: RN
+  - id: device_software_version
+    webhook_field: deviceSoftware
+    display_name: Device Software
+    description: Device Software Version
+    field_type: string
+    output_type: string
+    example: SYS.A3.R10.XXX.3.013.000.00
+  - id: operator_name
+    webhook_field: operator
+    display_name: Operator
+    description: Operator Name
+    field_type: string
+    output_type: string
+    example: Tarana
+  - id: region_name
+    webhook_field: region
+    display_name: Region
+    description: Region Name
+    field_type: string
+    output_type: string
+    example: Test_Region
+  - id: market_name
+    webhook_field: market
+    display_name: Market
+    description: Market Name
+    field_type: string
+    output_type: string
+    example: Test_Market
+  - id: site_name
+    webhook_field: site
+    display_name: Site
+    description: Site Name
+    field_type: string
+    output_type: string
+    example: Test_Site
+  - id: cell_name
+    webhook_field: cell
+    display_name: Cell
+    description: Cell Name
+    field_type: string
+    output_type: string
+    example: Test_Cell
+  - id: sector_name
+    webhook_field: sector
+    display_name: Sector
+    description: Sector Name
+    field_type: string
+    output_type: string
+    example: Test_Sector
+  - id: device_uptime_seconds
+    webhook_field: deviceUptimeSeconds
+    display_name: Device Uptime [Seconds]
+    description: Time since the device was rebooted in Seconds
+    field_type: integer
+    output_type: integer
+    example: 1234
+  - id: device_uptime_readable
+    webhook_field: deviceUptime
+    display_name: Device Uptime
+    description: Time since the device was rebooted
+    field_type: integer
+    output_type: string
+    example: 0d 2h 18m 9s (since 06 Nov 2024 05:52:32 UTC)
+  - id: device_first_seen_readable
+    webhook_field: deviceFirstSeen
+    display_name: Device First Seen
+    description: When the device was first seen
+    field_type: integer
+    output_type: date
+    example: 05 Feb 2024 14:54:32 UTC
+  - id: device_boot_reason
+    webhook_field: deviceBootReason
+    display_name: Device Boot Reason
+    description: Device Boot Reason
+    field_type: string
+    output_type: string
+    example: Warm Boot
+  - id: event_additional_details
+    webhook_field: deviceDisconnectReason
+    display_name: Device Disconnect Reason
+    description: Device Disconnect Reason
+    field_type: string
+    output_type: string
+    example: Test_DisconnectReason
+  - id: device_reboot_message
+    webhook_field: rebootReason
+    display_name: Device Reboot Reason
+    description: Device Reboot Reason
+    field_type: string
+    output_type: string
+    example: Test_RebootReason
+  - id: alarm_prefix
+    webhook_field: alarmType
+    display_name: Alarm Type
+    description: Alarm Type
+    field_type: string
+    output_type: string
+    example: Test_AlarmType
+  - id: alarm_resource
+    webhook_field: alarmResource
+    display_name: Alarm Resource
+    description: Alarm Resource
+    field_type: string
+    output_type: string
+    example: Test_AlarmResource
+  - id: alarm_id
+    webhook_field: alarmName
+    display_name: Alarm Name
+    description: Alarm Name
+    field_type: string
+    output_type: string
+    example: Test_AlarmName
+  - id: alarm_text
+    webhook_field: alarmDescription
+    display_name: Alarm Description
+    description: Alarm Description
+    field_type: string
+    output_type: string
+    example: Test_AlarmDescription
+  - id: alarm_create_time
+    webhook_field: alarmCreatedAt
+    display_name: Alarm Created At
+    description: Alarm Created At
+    field_type: long
+    output_type: date
+    example: 05 Feb 2024 14:54:32 UTC
+  - id: alarm_severity
+    webhook_field: alarmSeverity
+    display_name: Alarm Severity
+    description: Alarm Severity
+    field_type: integer
+    output_type: string
+    example: Critical
+  - id: alarm_state
+    webhook_field: alarmState
+    display_name: Alarm State
+    description: Alarm State
+    field_type: string
+    output_type: string
+    example: Alarm Raised
+  - id: cbsd_grant_disabled_carrier
+    webhook_field: carrierDisabled
+    display_name: Carrier Disabled
+    description: CBSD Grant Disabled Carrier
+    field_type: integer
+    output_type: integer
+    example: 0
+  - id: cbsd_grant_master_id
+    webhook_field: connectedBnId
+    display_name: Connected BN
+    description: CBSD Connected BN
+    field_type: string
+    output_type: string
+    example: Test_BN_SerialNumber
+  - id: cbsd_grant_lower_frequency_mhz
+    webhook_field: lowerFrequencyMhz
+    display_name: Lower Frequency [Mhz]
+    description: CBSD Grant Lower Frequency [Mhz]
+    field_type: integer
+    output_type: integer
+    example: 3660
+  - id: cbsd_grant_upper_frequency_mhz
+    webhook_field: upperFrequencyMhz
+    display_name: Upper Frequency [Mhz]
+    description: CBSD Grant Upper Frequency [Mhz]
+    field_type: integer
+    output_type: integer
+    example: 3700
+  - id: auto_upgrade_start_time
+    webhook_field: startTime
+    display_name: Start Time
+    description: Auto Upgrade Start Time
+    field_type: string
+    output_type: date
+    example: 05 Feb 2024 14:54:32 UTC
+  - id: auto_upgrade_end_time
+    webhook_field: endTime
+    display_name: End Time
+    description: Auto Upgrade End Time
+    field_type: string
+    output_type: date
+    example: 05 Feb 2024 14:54:32 UTC
+  - id: auto_upgrade_min_bn_software_version
+    webhook_field: bnAutoUpgradeSoftwareVersion
+    display_name: BN Auto Upgrade Software Version
+    description: BN Auto Upgrade Software Version
+    field_type: string
+    output_type: string
+    example: SYS.A0.B10.XXX.3.013.000.00
+  - id: auto_upgrade_min_g2_bn_software_version
+    webhook_field: g2bnAutoUpgradeSoftwareVersion
+    display_name: G2 BN Auto Upgrade Software Version
+    description: G2 BN Auto Upgrade Software Version
+    field_type: string
+    output_type: string
+    example: SYS.A4.B10.XXX.4.013.000.00
+  - id: auto_upgrade_min_rn_software_version
+    webhook_field: rnAutoUpgradeSoftwareVersion
+    display_name: RN Auto Upgrade Software Version
+    description: RN Auto Upgrade Software Version
+    field_type: string
+    output_type: string
+    example: SYS.A3.R10.XXX.3.013.000.00
+  - id: auto_upgrade_operator_name
+    webhook_field: operatorName
+    display_name: Operator
+    description: Operator Name
+    field_type: string
+    output_type: string
+    example: Tarana
+  - id: auto_upgrade_sector_name
+    webhook_field: sectorName
+    display_name: Sector
+    description: Sector Name
+    field_type: string
+    output_type: string
+    example: Test_Sector
+  - id: auto_upgrade_participate_sector_names
+    webhook_field: candidateSectorNames
+    display_name: Candidate Sectors
+    description: Upgrading Sector Names
+    field_type: string
+    output_type: string
+    example: Test_Sector
+  - id: auto_upgrade_partial_sector_names
+    webhook_field: partiallyUpgradeSectorNames
+    display_name: Partially Upgraded Sectors
+    description: Partially Upgraded Sector Names
+    field_type: string
+    output_type: string
+    example: Test_Sector
+  - id: error_reason
+    webhook_field: reason
+    display_name: Reason
+    description: Reason
+    field_type: string
+    output_type: string
+    example: Test_ErrorReason
+  - id: grace_period_start_date
+    webhook_field: Start date
+    display_name: Start date
+    description: Start date
+    field_type: string
+    output_type: date
+    example: Feb 05, 2025
+  - id: licence_enforcement_start_date
+    webhook_field: License enforcement start date
+    display_name: License enforcement start date
+    description: License enforcement start date
+    field_type: string
+    output_type: date
+    example: Feb 05, 2025
+  - id: grace_period_end_date
+    webhook_field: Grace end date
+    display_name: Grace end date
+    description: Grace end date
+    field_type: string
+    output_type: date
+    example: Feb 05, 2025
+  - id: device_connected_bn_hostname
+    webhook_field: connectedBnHostname
+    display_name: Connected BN Hostname
+    description: Hostname of the BN currently serving the RN
+    field_type: string
+    output_type: string
+    example: Test_Hostname
+  - id: device_connected_bn_serial_number
+    webhook_field: connectedBnSerialNumber
+    display_name: Connected BN Serial Number
+    description: Serial Number of the BN currently serving the RN
+    field_type: string
+    output_type: string
+    example: Test_Hostname
+  - id: device_svlan
+    webhook_field: svlan
+    display_name: SVLAN
+    description: SVLAN (Data VLAN) reported by the connected BN
+    field_type: integer
+    output_type: integer
+    example: 2000
+  - id: device_rn_mac_address
+    webhook_field: rnMacAddress
+    display_name: RN MAC Address
+    description: MAC Address of the RN
+    field_type: string
+    output_type: string
+    example: 00:1A:2B:3C:4D:5E
+  - id: device_bn_management_ipv4
+    webhook_field: bnManagementIPv4
+    display_name: BN Management IPv4
+    description: IPv4 management IP address of the BN
+    field_type: string
+    output_type: string
+    example: 192.168.0.1
+  - id: device_bn_management_ipv6
+    webhook_field: bnManagementIPv6
+    display_name: BN Management IPv6
+    description: IPv6 management IP address of the BN
+    field_type: string
+    output_type: string
+    example: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+event_log:
+  count: 326
+  distinct_types: 46
+  categories:
+  - name: NETWORK
+    display: Network
+  - name: ALARM
+    display: Alarm
+  - name: OPERATIONS
+    display: Operations
+  - name: SPECTRUM
+    display: Spectrum
+  - name: ADMIN
+    display: Admin
+  - name: CONFIG
+    display: Config
+  note: 'The TCS event log vocabulary — the audit/activity stream visible in the portal and retained for
+    399 days. It is a superset of the webhook alert types: only the twelve alert types above are deliverable
+    to a webhook.'
+  items:
+  - name: ALERT_CREATED
+    display_name: Alert Created
+    type: ALERT_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert created successfully
+    version: '1'
+  - name: ALERT_MODIFIED
+    display_name: Alert Modified
+    type: ALERT_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert modified successfully
+    version: '1'
+  - name: ALERT_DELETED
+    display_name: Alert Deleted
+    type: ALERT_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert deleted successfully
+    version: '1'
+  - name: ALERT_ENABLED
+    display_name: Alert Enabled
+    type: ALERT_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert enabled successfully
+    version: '1'
+  - name: ALERT_DISABLED
+    display_name: Alert Disabled
+    type: ALERT_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert disabled successfully
+    version: '1'
+  - name: SET_CONFIG_INITIATED
+    display_name: Device Config Set Initiated
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set config operation initiated
+    version: '1'
+  - name: SET_CONFIG_SUCCEEDED
+    display_name: Device Config Set Succeeded
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set config operation succeeded
+    version: '1'
+  - name: SET_CONFIG_SKIPPED
+    display_name: Device Config Skipped
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set config operation skipped
+    version: '1'
+  - name: SET_CONFIG_PARTIALLY_SUCCEEDED
+    display_name: Device Config Set Succeeded Partially
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set config operation succeeded partially
+    version: '1'
+  - name: SET_CONFIG_FAILED
+    display_name: Device Config Set Failed
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set config operation failed
+    version: '1'
+  - name: SAVE_CONFIG_INITIATED
+    display_name: Device Config Save Initiated
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Device save config operation initiated
+    version: '1'
+  - name: SAVE_CONFIG_SUCCEEDED
+    display_name: Device Config Save Succeeded
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Device save config operation succeeded
+    version: '1'
+  - name: SAVE_CONFIG_FAILED
+    display_name: Device Config Save Failed
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Device save config operation failed
+    version: '1'
+  - name: SET_DEVICE_PASSWORD_SUCCEEDED
+    display_name: Device Set Password Successful
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set password operation successful
+    version: '1'
+  - name: SET_DEVICE_PASSWORD_FAILED
+    display_name: Device Set Password Failed
+    type: CONFIG_OPERATION
+    category: CONFIG
+    description: Device set password operation failed
+    version: '1'
+  - name: FULL_CONFIG_PUSH_REQUESTED
+    display_name: Full Config Push Requested
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: User requested TCS to push latest config to device
+    version: '1'
+  - name: NETWORK_RECONNECTION_REQUESTED
+    display_name: Network Reconnection Requested
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: User requested device to reconnect to network
+    version: '1'
+  - name: SET_CONNECTION_ATTEMPT_CONFIG_FAILED
+    display_name: Connection Attempt Set Operation Failed
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Connection attempt set operation failed
+    version: '1'
+  - name: RADIO_RESET_INITIATED
+    display_name: Primary BN Search Initiated
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Primary BN search initiated successfully
+    version: '1'
+  - name: RADIO_RESET_INITIATE_FAILED
+    display_name: Primary BN Search Initiation Failed
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Primary BN search initiation failed
+    version: '1'
+  - name: DEVICE_MUTED
+    display_name: Device Muted
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: User requested that the radio be muted
+    version: '1'
+  - name: DEVICE_UNMUTED
+    display_name: Device Unmuted
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: User requested that the radio be unmuted
+    version: '1'
+  - name: AUTO_CONNECT_TO_PRIMARY_BN_INITIATED
+    display_name: Auto-Connect To Primary BN Initiated
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Auto-Connect to Primary BN Initiated
+    version: '1'
+  - name: AUTO_CONNECT_TO_PRIMARY_BN_INITIATE_FAILED
+    display_name: Auto-Connect To Primary BN Failed
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Auto-Connect to Primary BN Failed
+    version: '1'
+  - name: LOGIN_TO_DEVICE_SUCCEEDED
+    display_name: Login To Device Succeeded
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Login to device was successful
+    version: '1'
+  - name: LOGIN_TO_DEVICE_FAILED
+    display_name: Login To Device Failed
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Login to device failed
+    version: '1'
+  - name: DEVICE_ALARM_RAISED
+    display_name: Alarm Raised
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm raised by the device/TCS
+    version: '1'
+  - name: DEVICE_ALARM_CLEARED
+    display_name: Alarm Cleared
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm cleared by the device/TCS
+    version: '1'
+  - name: DEVICE_ALARM_UPDATED
+    display_name: Alarm Updated
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm updated by the device/TCS
+    version: '1'
+  - name: DIALOUT_SUCCESS
+    display_name: Service Subscription Succeeded
+    type: DIALOUT
+    category: OPERATIONS
+    description: Alarm device dialout success
+    version: '1'
+  - name: DIALOUT_FAILURE
+    display_name: Service Subscription Failed
+    type: DIALOUT
+    category: OPERATIONS
+    description: Alarm device dialout failure
+    version: '1'
+  - name: DEVICE_REBOOT_INITIATED
+    display_name: Device Reboot Initiated
+    type: DEVICE_REBOOT
+    category: OPERATIONS
+    description: Device reboot operation initiated
+    version: '1'
+  - name: ALARM_ACKNOWLEDGED
+    display_name: Alarm Acknowledged
+    type: ALARM_OPERATIONS
+    category: OPERATIONS
+    description: Alarm Acknowledged
+    version: '1'
+  - name: ALARM_UNACKNOWLEDGED
+    display_name: Alarm Unacknowledged
+    type: ALARM_OPERATIONS
+    category: OPERATIONS
+    description: Alarm Unacknowledged
+    version: '1'
+  - name: ALARM_CLEARED_USING_API
+    display_name: Alarm Cleared Using API
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm cleared using an API
+    version: '1'
+  - name: DIALOUT_SUCCESS
+    display_name: Service Subscription Succeeded
+    type: DIALOUT
+    category: OPERATIONS
+    description: Metric device dialout success
+    version: '1'
+  - name: DIALOUT_FAILURE
+    display_name: Service Subscription Failed
+    type: DIALOUT
+    category: OPERATIONS
+    description: Metric device dialout failure
+    version: '1'
+  - name: DIALOUT_SUCCESS
+    display_name: Service Subscription Succeeded
+    type: DIALOUT
+    category: OPERATIONS
+    description: Metric device dialout success
+    version: '1'
+  - name: DIALOUT_FAILURE
+    display_name: Service Subscription Failed
+    type: DIALOUT
+    category: OPERATIONS
+    description: Metric device dialout failure
+    version: '1'
+  - name: LIFETIME_PEAK_RATE_RESET
+    display_name: Lifetime Peak Rate Reset
+    type: LIFETIME_PEAK_RESET
+    category: OPERATIONS
+    description: Lifetime peak rate reset on the device
+    version: '1'
+  - name: NEW_DEVICE
+    display_name: New Device
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Device seen for the first time
+    version: '1'
+  - name: DEVICE_REBOOT_COMPLETED
+    display_name: Device Reboot Completed
+    type: DEVICE_ACTIVITY
+    category: OPERATIONS
+    description: Device Reboot Completed
+    version: '1'
+  - name: DEVICE_LOCATION_ERROR
+    display_name: GPS Coordinates Not Set
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device location not set
+    version: '1'
+  - name: DEVICE_UPDATED_BY_NB_API
+    display_name: Device Updated From API
+    type: DEVICE_UPDATED
+    category: CONFIG
+    description: Device updated via NB API
+    version: '1'
+  - name: DEVICE_ATTRIBUTES_CHANGED_INTERNAL
+    display_name: Custom Attribute Updated Internal
+    type: DEVICE_UPDATED
+    category: CONFIG
+    description: Device attributes changed by user
+    version: '1'
+  - name: DEVICE_ATTRIBUTES_CHANGED
+    display_name: Custom Attribute Updated
+    type: DEVICE_UPDATED
+    category: CONFIG
+    description: Device attributes changed by user
+    version: '1'
+  - name: AUTO_UPGRADE_CONFIGURED
+    display_name: Auto-Upgrade Policy Configured
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Configured
+    version: '1'
+  - name: AUTO_UPGRADE_OVERRIDDEN
+    display_name: Auto-Upgrade Policy Overridden
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Overridden
+    version: '1'
+  - name: AUTO_UPGRADE_UPDATED
+    display_name: Auto-Upgrade Policy Updated
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Updated
+    version: '1'
+  - name: AUTO_UPGRADE_DELETED
+    display_name: Auto-Upgrade Deleted
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Deleted
+    version: '1'
+  - name: AUTO_UPGRADE_ENABLED
+    display_name: Auto-Upgrade Enabled
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Enabled
+    version: '1'
+  - name: AUTO_UPGRADE_DISABLED
+    display_name: Auto-Upgrade Disabled
+    type: AUTO_UPGRADE
+    category: CONFIG
+    description: Auto-Upgrade Disabled
+    version: '1'
+  - name: CELL_CREATED
+    display_name: Cell Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Cell Created
+    version: '1'
+  - name: CELL_UPDATED
+    display_name: Cell Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Cell Updated
+    version: '1'
+  - name: CELL_DELETED
+    display_name: Cell Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Cell Deleted
+    version: '1'
+  - name: SECTOR_CREATED
+    display_name: Sector Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Sector Created
+    version: '1'
+  - name: SECTOR_UPDATED
+    display_name: Sector Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Sector Updated
+    version: '1'
+  - name: SECTOR_DELETED
+    display_name: Sector Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Sector Deleted
+    version: '1'
+  - name: SITE_CREATED
+    display_name: Site Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Site Created
+    version: '1'
+  - name: SITE_UPDATED
+    display_name: Site Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Site Updated
+    version: '1'
+  - name: SITE_DELETED
+    display_name: Site Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Site Deleted
+    version: '1'
+  - name: MARKET_CREATED
+    display_name: Market Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Market Created
+    version: '1'
+  - name: MARKET_UPDATED
+    display_name: Market Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Market Updated
+    version: '1'
+  - name: MARKET_DELETED
+    display_name: Market Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Market Deleted
+    version: '1'
+  - name: REGION_CREATED
+    display_name: Region Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Region Created
+    version: '1'
+  - name: REGION_UPDATED
+    display_name: Region Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Region Updated
+    version: '1'
+  - name: REGION_DELETED
+    display_name: Region Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Region Deleted
+    version: '1'
+  - name: PRIMARY_BN_SET
+    display_name: Primary BN Set
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Primary BN Set
+    version: '1'
+  - name: PRIMARY_BN_REMOVED
+    display_name: Primary BN Removed
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Primary BN Removed
+    version: '1'
+  - name: NEIGHBOUR_FREQUENCY_LIST_UPDATED
+    display_name: Neighbour Frequency List Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Neighbour Frequency List Updated
+    version: '1'
+  - name: SERVICE_PORT_ENABLED
+    display_name: Service Port Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Service Port Enabled
+    version: '1'
+  - name: SERVICE_PORT_DISABLED
+    display_name: Service Port Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Service Port Disabled
+    version: '1'
+  - name: METRICS_COLLECTOR_MODIFIED
+    display_name: Metrics Collector Modified
+    type: NETWORK_CONFIGURATION
+    category: CONFIG
+    description: Streaming telemetry end point modified
+    version: '1'
+  - name: METRICS_COLLECTOR_REMOVED
+    display_name: Metrics Collector Removed
+    type: NETWORK_CONFIGURATION
+    category: CONFIG
+    description: Streaming telemetry end point removed
+    version: '1'
+  - name: METRICS_COLLECTOR_ENABLED
+    display_name: Metrics Collector Enabled
+    type: NETWORK_CONFIGURATION
+    category: CONFIG
+    description: Streaming telemetry enabled
+    version: '1'
+  - name: METRICS_COLLECTOR_DISABLED
+    display_name: Metrics Collector Disabled
+    type: NETWORK_CONFIGURATION
+    category: CONFIG
+    description: Streaming telemetry disabled
+    version: '1'
+  - name: SUPPORT_ENABLED
+    display_name: Support Access Enabled
+    type: NETWORK_CONFIGURATION
+    category: ADMIN
+    description: Support Access Enabled
+    version: '1'
+  - name: SUPPORT_DISABLED
+    display_name: Support Access Disabled
+    type: NETWORK_CONFIGURATION
+    category: ADMIN
+    description: Support Access Disabled
+    version: '1'
+  - name: DEBUG_ENABLED
+    display_name: Debug Access Enabled
+    type: NETWORK_CONFIGURATION
+    category: ADMIN
+    description: Debug Access Enabled
+    version: '1'
+  - name: DEBUG_DISABLED
+    display_name: Debug Access Disabled
+    type: NETWORK_CONFIGURATION
+    category: ADMIN
+    description: Debug Access Disabled
+    version: '1'
+  - name: METRICS_COLLECTOR_KEY_UPDATED
+    display_name: Metrics Collector Key Update
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Metrics Collector Key Updated
+    version: '1'
+  - name: DEVICE_REBOOT_INITIATED
+    display_name: Device Reboot Initiated
+    type: DEVICE_REBOOT
+    category: OPERATIONS
+    description: Device reboot operation initiated
+    version: '1'
+  - name: DEVICE_REBOOT_FAILED
+    display_name: Device Reboot Failed
+    type: DEVICE_REBOOT
+    category: OPERATIONS
+    description: User-requested reboot command did not reach the device
+    version: '1'
+  - name: DEVICE_SOFTWARE_DOWNLOAD_INITIATED
+    display_name: SW Download Initiated
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software download operation initiated
+    version: '1'
+  - name: DEVICE_SOFTWARE_UPGRADE_INITIATED
+    display_name: SW Upgrade Initiated
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software install operation initiated
+    version: '1'
+  - name: DEVICE_SOFTWARE_UPGRADE_ABORTED
+    display_name: SW Upgrade Aborted
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software install operation aborted
+    version: '1'
+  - name: DEVICE_SOFTWARE_UPGRADE_SUCCESS
+    display_name: SW Upgrade Success
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software install operation success
+    version: '1'
+  - name: DEVICE_SOFTWARE_DOWNLOAD_SUCCESS
+    display_name: SW Download Successful
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software download operation success
+    version: '1'
+  - name: DEVICE_SOFTWARE_UPGRADE_FAILED
+    display_name: SW Upgrade Failed
+    type: DEVICE_SOFTWARE_UPGRADE
+    category: OPERATIONS
+    description: Device software install operation failed
+    version: '1'
+  - name: AUTO_UPGRADE_UPCOMING
+    display_name: Auto-Upgrade Upcoming
+    type: AUTO_UPGRADE
+    category: OPERATIONS
+    description: Sectors that are the candidates for upgrade during this maintenance window
+    version: '1'
+  - name: AUTO_UPGRADE_COMPLETE
+    display_name: Auto-Upgrade Completed
+    type: AUTO_UPGRADE
+    category: OPERATIONS
+    description: Sectors that were upgraded during this maintenance window
+    version: '1'
+  - name: RADIO_RESET_INITIATED
+    display_name: Primary BN Search Initiated
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Reconnect to network operation initiated successfully
+    version: '1'
+  - name: BOOTBANK_SWITCH_INITIATED
+    display_name: Bootbank Switch Initiated
+    type: BOOTBANK_SWITCH
+    category: OPERATIONS
+    description: Bootbank Switch Initiated
+    version: '1'
+  - name: BOOTBANK_SWITCH_FAILED
+    display_name: Bootbank Switch Failed
+    type: BOOTBANK_SWITCH
+    category: OPERATIONS
+    description: Bootbank Switch Failed
+    version: '1'
+  - name: SPECIAL_METRICS_TELEMETRY_INITIATED
+    display_name: Special Metrics Telemetry Initiated
+    type: SPECIAL_METRICS_TELEMETRY
+    category: NETWORK
+    description: Special Metrics Telemetry Initiated
+    version: '1'
+  - name: SPECIAL_METRICS_TELEMETRY_INITIATION_FAILED
+    display_name: Special Metrics Telemetry Initiation Failed
+    type: SPECIAL_METRICS_TELEMETRY
+    category: NETWORK
+    description: Special Metrics Telemetry Initiation Failed
+    version: '1'
+  - name: SPECIAL_METRICS_TELEMETRY_STOPPED
+    display_name: Special Metrics Telemetry Stopped
+    type: SPECIAL_METRICS_TELEMETRY
+    category: NETWORK
+    description: Special Metrics Telemetry Stopped
+    version: '1'
+  - name: CONNECT_TO_PRIMARY_BN_INITIATED
+    display_name: Connect To Primary BN Initiated
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Connect to Primary BN Initiated
+    version: '1'
+  - name: CONNECT_TO_PRIMARY_BN_INITIATE_FAILED
+    display_name: Connect To Primary BN Failed
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Connect to Primary BN Failed
+    version: '1'
+  - name: RECONNECT_TO_NETWORK_INITIATED
+    display_name: Reconnect To Network Initiated
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Reconnect to Network Initiated
+    version: '1'
+  - name: RECONNECT_TO_NETWORK_INITIATE_FAILED
+    display_name: Reconnect To Network Failed
+    type: CONFIG_OPERATION
+    category: NETWORK
+    description: Reconnect to Network Failed
+    version: '1'
+  - name: CERTIFICATE_DOWNLOAD_SUCCESS
+    display_name: Certificate Download Successful
+    type: CERTIFICATE_DOWNLOAD
+    category: OPERATIONS
+    description: Certificate download operation successful
+    version: '1'
+  - name: CERTIFICATE_DOWNLOAD_FAILED
+    display_name: Certificate Download Failed
+    type: CERTIFICATE_DOWNLOAD
+    category: OPERATIONS
+    description: Certificate download operation failed
+    version: '1'
+  - name: START_LINK_DIAGNOSTIC
+    display_name: Link Diagnostic Started
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Started link diagnostic operation
+    version: '1'
+  - name: STOP_LINK_DIAGNOSTIC
+    display_name: Link Diagnostic Stopped
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Stop link diagnostic operation
+    version: '1'
+  - name: SPEED_TEST_STARTED
+    display_name: Speed Test Started
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Started speed test
+    version: '1'
+  - name: SPEED_TEST_STOPPED
+    display_name: Speed Test Stopped
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Stopped speed test
+    version: '1'
+  - name: PING_TEST_INITIATED
+    display_name: Ping Test Initiated
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Ping test initiated
+    version: '1'
+  - name: PING_TEST_NOT_INITIATED
+    display_name: Ping Test Initiation Failed
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Ping test not initiated
+    version: '1'
+  - name: CABLE_TEST_INITIATED
+    display_name: Cable Test Initiated
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Cable test initiated
+    version: '1'
+  - name: CABLE_TEST_NOT_INITIATED
+    display_name: Cable Test Initiation Failed
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Cable test not initiated
+    version: '1'
+  - name: TRACEROUTE_TEST_INITIATED
+    display_name: Diagnostics Test Initiation Successful
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Traceroute test initiated
+    version: '1'
+  - name: TRACEROUTE_TEST_NOT_INITIATED
+    display_name: Diagnostics Test Initiation Failure
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Traceroute test not initiated
+    version: '1'
+  - name: DNS_LOOKUP_TEST_INITIATED
+    display_name: DNS Lookup Test Initiated
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Dns lookup test initiated
+    version: '1'
+  - name: DNS_LOOKUP_TEST_NOT_INITIATED
+    display_name: DNS Lookup Test Initiation Failed
+    type: DIAGNOSTIC_OPERATION
+    category: OPERATIONS
+    description: Dns lookup test not initiated
+    version: '1'
+  - name: ALERT_NOTIFICATION_CONFIGURED
+    display_name: Notification Configured
+    type: ALERT_NOTIFICATION_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Notification configured successfully
+    version: '1'
+  - name: ALERT_NOTIFICATION_MODIFIED
+    display_name: Notification Modified
+    type: ALERT_NOTIFICATION_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Notification modified successfully
+    version: '1'
+  - name: ALERT_NOTIFICATION_DELETED
+    display_name: Notification Deleted
+    type: ALERT_NOTIFICATION_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Notification deleted successfully
+    version: '1'
+  - name: WEBHOOK_CREATED
+    display_name: Webhook Created
+    type: WEBHOOK_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Webhook created successfully
+    version: '1'
+  - name: WEBHOOK_MODIFIED
+    display_name: Webhook Modified
+    type: WEBHOOK_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Webhook modified successfully
+    version: '1'
+  - name: WEBHOOK_DELETED
+    display_name: Webhook Deleted
+    type: WEBHOOK_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Webhook deleted successfully
+    version: '1'
+  - name: NEW_SAS_GRANT_RECEIVED
+    display_name: New SAS Grant Received
+    type: GRANT_VALIDATION
+    category: SPECTRUM
+    description: The CBSD received a new CBRS grant from SAS.
+    version: '1'
+  - name: SAS_GRANT_FAILURE
+    display_name: SAS Grant Failure
+    type: GRANT_VALIDATION
+    category: SPECTRUM
+    description: CBRS Grant Request to SAS failed
+    version: '1'
+  - name: SAS_GRANT_RELINQUISHMENT_REQUESTED
+    display_name: SAS Grant Relinquishment Requested
+    type: GRANT_VALIDATION
+    category: SPECTRUM
+    description: Grant Relinquishment request sent to SAS.
+    version: '1'
+  - name: SAS_GRANT_RELINQUISHMENT_FAILURE
+    display_name: SAS Grant Relinquishment Failure
+    type: GRANT_RELINQUISHMENT
+    category: SPECTRUM
+    description: CBRS Grant Relinquishment Request to SAS failed
+    version: '1'
+  - name: SAS_GRANT_VALIDATION_FAILURE
+    display_name: SAS Grant Validation Failure
+    type: GRANT_VALIDATION
+    category: SPECTRUM
+    description: CBRS Grant Request to SAS failed during validation check
+    version: '1'
+  - name: FIRST_SUCCESSFUL_HEARTBEAT
+    display_name: First SAS Heartbeat Successful
+    type: HEARTBEAT_SUCCESS
+    category: SPECTRUM
+    description: The CBSD completed its first successful heartbeat.
+    version: '1'
+  - name: SAS_HEARTBEAT_FAILURE
+    display_name: SAS Heartbeat Failure
+    type: HEARTBEAT_VALIDATION
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed
+    version: '1'
+  - name: SAS_HEARTBEAT_VALIDATION_FAILURE
+    display_name: SAS Heartbeat Validation Failure
+    type: HEARTBEAT_VALIDATION
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed during validation check
+    version: '1'
+  - name: SAS_HEARTBEAT_TERMINATED_GRANT
+    display_name: SAS Grant Terminated Error
+    type: HEARTBEAT_FAILURE
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed with terminated grant error
+    version: '1'
+  - name: SAS_HEARTBEAT_SUSPENDED_GRANT
+    display_name: SAS Grant Suspended Error
+    type: HEARTBEAT_FAILURE
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed with suspended grant error
+    version: '1'
+  - name: SAS_HEARTBEAT_SUSPENDED_GRANT_ICP
+    display_name: SAS Grant Suspended IC Pending
+    type: HEARTBEAT_FAILURE
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed with suspended grant due to Interference Calculations
+      Pending
+    version: '1'
+  - name: SAS_HEARTBEAT_SUSPENDED_GRANT_IAP
+    display_name: SAS Grant Suspended IAP Pending
+    type: HEARTBEAT_FAILURE
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed with suspended grant due to Iterative Allocation
+      Process Pending
+    version: '1'
+  - name: SAS_HEARTBEAT_SUSPENDED_GRANT_DPA
+    display_name: SAS Grant Suspended DPA
+    type: HEARTBEAT_FAILURE
+    category: SPECTRUM
+    description: CBRS Heartbeat Request to SAS failed with suspended grant due to Dynamic Protection Area
+    version: '1'
+  - name: SAS_HEARTBEAT_UNSUSPENDED_GRANT
+    display_name: SAS Grant Unsuspended
+    type: HEARTBEAT_SUCCESS
+    category: SPECTRUM
+    description: CBRS grant was suspended on the last heartbeat, but is now authorized.
+    version: '1'
+  - name: RSSI_DIALOUT_REQUEST_SUCCESS
+    display_name: RSSI Dialout Request Succeeded
+    type: DIALOUT
+    category: SPECTRUM
+    description: RSSI device dialout successfully requested
+    version: '1'
+  - name: RSSI_DIALOUT_REQUEST_FAILURE
+    display_name: RSSI Dialout Request Failed
+    type: DIALOUT
+    category: SPECTRUM
+    description: RSSI device dialout request failure
+    version: '1'
+  - name: SAS_REGISTRATION_SUCCESS
+    display_name: Registration Success
+    type: REGISTRATION_VALIDATION
+    category: SPECTRUM
+    description: Successful CBSD Registration
+    version: '1'
+  - name: SAS_REGISTRATION_VALIDATION_FAILURE
+    display_name: SAS Registration Validation Failed
+    type: REGISTRATION_VALIDATION
+    category: SPECTRUM
+    description: Registration of device with SAS failed during validation check
+    version: '1'
+  - name: SAS_REGISTRATION_FAILURE
+    display_name: SAS Registration Failure
+    type: REGISTRATION_VALIDATION
+    category: SPECTRUM
+    description: Registration of device with SAS failed
+    version: '1'
+  - name: SAS_DEREGISTRATION_REQUESTED
+    display_name: SAS Device De-Registration Requested
+    type: DEREGISTRATION_VALIDATION
+    category: SPECTRUM
+    description: De-registration request sent to SAS.
+    version: '1'
+  - name: SPECTRUM_REACQUIRE_REQUESTED
+    display_name: Spectrum Reacquire Requested
+    type: REACQUIRE_SPECTRUM
+    category: SPECTRUM
+    description: Spectrum reacquire requested for the device
+    version: '1'
+  - name: CBRS_SPECTRUM_REACQUIRE_REQUESTED
+    display_name: CBRS Spectrum Reacquire Requested
+    type: REACQUIRE_SPECTRUM
+    category: SPECTRUM
+    description: CBRS Spectrum reacquire requested for the device
+    version: '1'
+  - name: CBRS_SPECTRUM_REACQUIRE_REQUESTED
+    display_name: CBRS Spectrum Reacquire Requested
+    type: REACQUIRE_SPECTRUM
+    category: SPECTRUM
+    description: CBRS Spectrum reacquire requested for the device
+    version: '1'
+  - name: AFC_SPECTRUM_REACQUIRE_REQUESTED
+    display_name: AFC Spectrum Reacquire Requested
+    type: REACQUIRE_SPECTRUM
+    category: SPECTRUM
+    description: AFC Spectrum reacquire requested for the device
+    version: '1'
+  - name: CPI_ID_ADDED
+    display_name: CPI ID Added
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: CPI ID added
+    version: '1'
+  - name: CPI_ID_MODIFIED
+    display_name: CPI ID Modified
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: CPI ID modified
+    version: '1'
+  - name: CPI_ID_REMOVED
+    display_name: CPI ID Removed
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: CPI ID removed
+    version: '1'
+  - name: SAS_REGISTRATION_NO_CPI_ID
+    display_name: No CPI Id
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: CPI ID lookup failed
+    version: '1'
+  - name: INSTALL_PARAMETERS_UPDATED
+    display_name: Install Parameters Updated
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: Install parameters updated
+    version: '1'
+  - name: RADIO_CARRIER_ENABLED
+    display_name: Radio Carrier Enabled
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Radio parameters set for CBRS Device
+    version: '1'
+  - name: RADIO_PARAMETERS_SET_FAILED
+    display_name: CBRS Radio Parameters Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Radio parameters set failed CBRS Device
+    version: '1'
+  - name: RADIO_CARRIER_MUTED
+    display_name: Radio Carrier Muted
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Radio carrier muted CBRS Device
+    version: '1'
+  - name: AFC_RADIO_PARAMETERS_ASSIGNED
+    display_name: Radio Parameters Set Success
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC carrier parameters decided
+    version: '1'
+  - name: AFC_RADIO_PARAMETERS_SET_FAILED
+    display_name: Radio Parameters Set Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC carrier parameters set failed
+    version: '1'
+  - name: AFC_SPECTRUM_INQUIRY_FAILURE
+    display_name: AFC Spectrum Inquiry Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Spectrum Inquiry was unsuccessful
+    version: '1'
+  - name: AFC_SPECTRUM_CHANNEL_POWER_BELOW_MINIMUM
+    display_name: AFC Spectrum Channel Power Below Minimum
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Available AFC channel power may be insufficient for maintaining the RF link
+    version: '1'
+  - name: AFC_SPECTRUM_CHANNELS_NOT_AVAILABLE
+    display_name: AFC Spectrum Channels Not Available
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC spectrum channels not available
+    version: '1'
+  - name: INVALID_DEVICE_LOCATION_DETAILS
+    display_name: Invalid Device Details
+    type: DEVICE_VALIDATION
+    category: SPECTRUM
+    description: Device validation failed
+    version: '1'
+  - name: PREFERRED_FREQUENCY_LIST_UPDATED
+    display_name: Preferred Frequency List Updated (Deprecated)
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Preferred frequency list updated (Deprecated)
+    version: '1'
+  - name: PREFERRED_FREQUENCY_LIST_UPDATED_MHZ
+    display_name: Preferred Frequency List Updated
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Preferred frequency list updated
+    version: '1'
+  - name: EXCLUDE_FREQUENCY_LIST_UPDATED
+    display_name: Exclude Frequency List Updated
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Exclude frequency list updated
+    version: '1'
+  - name: AFC_EXCLUDE_FREQUENCY_LIST_UPDATED
+    display_name: AFC Exclude Frequency List Updated
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Exclude frequency list updated
+    version: '1'
+  - name: AFC_PREFERRED_FREQUENCY_LIST_UPDATED
+    display_name: AFC Preferred Frequency List Updated
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Preferred frequency list updated
+    version: '1'
+  - name: AFC_CARRIER_MUTED
+    display_name: AFC Carrier Muted
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Radio carrier muted for 6GHZ Device
+    version: '1'
+  - name: AFC_SERVER_UNREACHABLE
+    display_name: AFC Server HTTP Call Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC server HTTP call failed during Spectrum Inquiry
+    version: '1'
+  - name: AFC_INQUIRY_EMPTY_RESPONSE
+    display_name: AFC Empty Response
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Spectrum Inquiry Response is empty
+    version: '1'
+  - name: AFC_PROVIDER_NOT_CONFIGURED
+    display_name: AFC Provider Not Configured
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Provider is not configured
+    version: '1'
+  - name: SAS_SPECTRUMINFO_FAILURE
+    display_name: SAS Spectrum Inquiry Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Failed to get Spectrum Inquiry Response from SAS
+    version: '1'
+  - name: USER_CREATED
+    display_name: User Created
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: New user created
+    version: '1'
+  - name: MULTI_OPERATOR_USER_CREATED
+    display_name: Multi Operator User Created
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Multi operator user created
+    version: '1'
+  - name: USER_DETAILS_UPDATED
+    display_name: User Details Updated
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User details updated
+    version: '1'
+  - name: USER_OWNERSHIP_DETAILS_UPDATED
+    display_name: User Ownership Details Updated
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User ownership details updated
+    version: '1'
+  - name: USER_DELETED
+    display_name: User Deleted
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User deleted
+    version: '1'
+  - name: USER_LOGGED_IN
+    display_name: User Logged In
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User logged in
+    version: '1'
+  - name: IDP_USER_FIRST_TIME_LOGGED_IN
+    display_name: IDP User First Time Logged In
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: IDP user first time logged in
+    version: '1'
+  - name: TCS_USER_FIRST_TIME_LOGGED_IN
+    display_name: TCS User First Time Logged In
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: TCS user first time logged in
+    version: '1'
+  - name: USER_LOGIN_FAILED
+    display_name: User Login Failed
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User login failed
+    version: '1'
+  - name: USER_LOGGED_OUT
+    display_name: User Logged Out
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User logged out
+    version: '1'
+  - name: OPERATOR_CONTEXT_CHANGED
+    display_name: Operator Context Changed
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Operator context changed
+    version: '1'
+  - name: USER_FORGOT_PASSWORD
+    display_name: User Forgot Password
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User forgot password
+    version: '1'
+  - name: USER_PASSWORD_CHANGE
+    display_name: User Password Change
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User password change
+    version: '1'
+  - name: ADMIN_RESET_PASSWORD
+    display_name: User Password Reset
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Admin reset password
+    version: '1'
+  - name: ADMIN_SET_USER_PASSWORD
+    display_name: User Password Set
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Admin set user password
+    version: '1'
+  - name: ADMIN_RESEND_SIGNUP_DETAILS
+    display_name: Resend User Signup Details
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Admin resent signup detail
+    version: '1'
+  - name: SUPPORT_DEBUG_SESSION_STARTED
+    display_name: Debug Session Started
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Debug Session Started
+    version: '1'
+  - name: SUPPORT_DEBUG_SESSION_EXTENDED
+    display_name: Debug Session Extended
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Debug Session Extended
+    version: '1'
+  - name: SUPPORT_DEBUG_SESSION_CLOSED
+    display_name: Debug Session Stopped
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Debug Session Stopped
+    version: '1'
+  - name: MFA_SETUP_INITIATED
+    display_name: MFA Setup Initiated
+    type: MFA_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: MFA Setup Initiated
+    version: '1'
+  - name: MFA_SETUP_SUCCESS
+    display_name: MFA Setup Success
+    type: MFA_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: MFA Setup Success
+    version: '1'
+  - name: MFA_RESET
+    display_name: MFA Reset
+    type: MFA_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: MFA Reset
+    version: '1'
+  - name: OPERATOR_MFA_CONFIG_UPDATED
+    display_name: Operator MFA Config Updated
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Operator MFA Config Updated
+    version: '1'
+  - name: OPERATOR_IDP_CONFIG_CREATED
+    display_name: IDP Configuration Created
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: IDP Configuration created
+    version: '1'
+  - name: OPERATOR_IDP_CONFIG_UPDATED
+    display_name: IDP Configuration Updated
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: IDP Configuration updated
+    version: '1'
+  - name: OPERATOR_IDP_CONFIG_DELETED
+    display_name: IDP Configuration Deleted
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: IDP Configuration deleted
+    version: '1'
+  - name: ACTIVATE_USER
+    display_name: User Re-Activated
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: User Re-activated
+    version: '1'
+  - name: HBAC_PROFILE_CREATED
+    display_name: Hierarchy Profile Created
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: New Hierarchy profile created
+    version: '1'
+  - name: HBAC_PROFILE_CHANGED
+    display_name: Hierarchy Profile Changed
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Hierarchy profile changed
+    version: '1'
+  - name: HBAC_PROFILE_DELETED
+    display_name: Hierarchy Profile Deleted
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Hierarchy profile deleted
+    version: '1'
+  - name: OPERATOR_IDLE_SESSION_CONFIGURATION_ENABLED
+    display_name: Idle Session Configuration Enabled
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Idle Session Configuration Enabled
+    version: '1'
+  - name: OPERATOR_IDLE_SESSION_CONFIGURATION_DISABLED
+    display_name: Idle Session Configuration Disabled
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Idle Session Configuration Disabled
+    version: '1'
+  - name: OPERATOR_IDLE_SESSION_CONFIGURATION_UPDATED
+    display_name: Idle Session Configuration Updated
+    type: USER_MANAGEMENT_OPERATIONS
+    category: ADMIN
+    description: Idle Session Configuration Updated
+    version: '1'
+  - name: SNAPSHOT_REQUEST_INITIATED
+    display_name: Snapshot Request Initiated
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Create snapshot request initiated
+    version: '1'
+  - name: SNAPSHOT_CREATION_FAILED
+    display_name: Snapshot Creation Failed
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Snapshot could not be captured
+    version: '1'
+  - name: SNAPSHOT_REQUEST_FAILED
+    display_name: Snapshot Request Failed
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Create snapshot request failed
+    version: '1'
+  - name: SNAPSHOT_REQUEST_COMPLETED
+    display_name: Snapshot Request Completed
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Snapshot upload completed successfully by the device
+    version: '1'
+  - name: SNAPSHOT_UPLOAD_FAILED
+    display_name: Snapshot Upload Failed
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Snapshot upload failed
+    version: '1'
+  - name: SNAPSHOT_DELETED
+    display_name: Snapshot Deleted
+    type: DEVICE_SNAPSHOT
+    category: OPERATIONS
+    description: Snapshot Deleted
+    version: '1'
+  - name: SOFTWARE_UPLOAD_SUCCESS
+    display_name: New Software Uploaded
+    type: SOFTWARE_UPLOAD
+    category: OPERATIONS
+    description: Software uploaded successfully
+    version: '1'
+  - name: SOFTWARE_UPLOAD_FAILURE
+    display_name: New Software Upload Failed
+    type: SOFTWARE_UPLOAD
+    category: OPERATIONS
+    description: Software upload failed
+    version: '1'
+  - name: SOFTWARE_UPDATE_SUCCESS
+    display_name: SW Updated
+    type: SOFTWARE_UPDATE
+    category: OPERATIONS
+    description: Software updated successfully
+    version: '1'
+  - name: SOFTWARE_UPDATE_FAILURE
+    display_name: SW Update Failed
+    type: SOFTWARE_UPDATE
+    category: OPERATIONS
+    description: Software update failed
+    version: '1'
+  - name: SOFTWARE_REMOVAL_SUCCESS
+    display_name: SW Removal Successful
+    type: SOFTWARE_REMOVAL
+    category: OPERATIONS
+    description: Software removed
+    version: '1'
+  - name: SOFTWARE_REMOVAL_FAILURE
+    display_name: SW Removal Failed
+    type: SOFTWARE_REMOVAL
+    category: OPERATIONS
+    description: Software removal failed
+    version: '1'
+  - name: DEVICE_REGISTRATION_STOPPED
+    display_name: Heartbeat Stopped
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device is reachable but not sending registration messages
+    version: '1'
+  - name: RADIO_CARRIER_UP
+    display_name: Radio Carrier Up
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Radio Carrier Enabled
+    version: '1'
+  - name: RADIO_CARRIER_DOWN
+    display_name: Radio Carrier Down
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Radio Carrier Disabled
+    version: '1'
+  - name: DEVICE_ENDPOINT_NOT_REACHABLE
+    display_name: Device Unreachable
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device IP address is not reachable
+    version: '1'
+  - name: DEVICE_NETWORK_PARAMS_MISMATCH
+    display_name: Network Parameter Mismatch
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device reported network params do not match the configured values
+    version: '1'
+  - name: DEVICE_CONNECTED
+    display_name: Device Connected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Device connected
+    version: '1'
+  - name: DEVICE_DISCONNECTED
+    display_name: Device Disconnected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Device disconnected
+    version: '1'
+  - name: UNASSIGNED_DEVICE_CONNECTED
+    display_name: Orphan Device Connected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Orphan Device connected
+    version: '1'
+  - name: UNASSIGNED_DEVICE_DISCONNECTED
+    display_name: Orphan Device Disconnected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Orphan Device disconnected
+    version: '1'
+  - name: DEVICE_CONNECTED
+    display_name: Device Connected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Device connected
+    version: '1'
+  - name: DEVICE_DISCONNECTED
+    display_name: Device Disconnected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Device disconnected
+    version: '1'
+  - name: CLOUD_CONNECTED
+    display_name: Cloud Connected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: RN Device cloud connected
+    version: '1'
+  - name: CLOUD_DISCONNECTED
+    display_name: Cloud Disconnected
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: RN Device cloud disconnected
+    version: '1'
+  - name: DEVICE_LOCATION_ERROR
+    display_name: GPS Coordinates Not Set
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device location not set
+    version: '1'
+  - name: RESTRICTED_BN_INSTALLED
+    display_name: Restricted BN Installed
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Restricted BN Installed
+    version: '1'
+  - name: GRACE_PERIOD_STARTED_FOR_RESTRICTED_BN
+    display_name: Grace Period Started For Restricted BN
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Grace period started for Restricted BN
+    version: '1'
+  - name: GRACE_PERIOD_ENDED_FOR_RESTRICTED_BN
+    display_name: Grace Period Ended For Restricted BN
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Grace period ended for Restricted BN
+    version: '1'
+  - name: GRACE_PERIOD_RESET_FOR_RESTRICTED_BN
+    display_name: Grace Period Reset For Restricted BN
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: Grace period reset for Restricted BN
+    version: '1'
+  - name: RN_EXPERIENCING_LICENSE_ENFORCEMENT
+    display_name: RN Experiencing License Enforcement
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: RN experiencing license enforcement
+    version: '1'
+  - name: LICENSE_ENFORCEMENT_LIFTED_FROM_RN
+    display_name: License Enforcement Lifted From RN
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: License enforcement lifted from RN
+    version: '1'
+  - name: DEVICE_IP_CONFLICT
+    display_name: IP Address Conflict
+    type: DEVICE_VALIDATION
+    category: NETWORK
+    description: Device IP conflict detected
+    version: '1'
+  - name: DEVICE_OPENVPN_TUNNEL_CONNECT
+    display_name: Device Openvpn Tunnel Connect
+    type: OPENVPN
+    category: NETWORK
+    description: Openvpn client connected
+    version: '1'
+  - name: DEVICE_OPENVPN_TUNNEL_DISCONNECT
+    display_name: Device Openvpn Tunnel Disconnect
+    type: OPENVPN
+    category: NETWORK
+    description: Openvpn client disconnected
+    version: '1'
+  - name: DEVICE_DETAILS_FETCH_FAILED
+    display_name: Device Details Fetch Failed
+    type: OPENVPN
+    category: NETWORK
+    description: Device details fetch failed
+    version: '1'
+  - name: DEVICE_EXPIRED_CERT_WHITELISTED
+    display_name: Device Expired Cert Whitelisted
+    type: OPENVPN
+    category: NETWORK
+    description: Device expired cert whitelisted
+    version: '1'
+  - name: DEVICE_EXPIRED_CERT_NOT_WHITELISTED
+    display_name: Device Expired Cert Not Whitelisted
+    type: OPENVPN
+    category: NETWORK
+    description: Device expired cert not whitelisted
+    version: '1'
+  - name: DEVICE_WITH_VALID_CERT_WHITELISTED
+    display_name: Device With Valid Cert Whitelisted
+    type: OPENVPN
+    category: NETWORK
+    description: Device with valid cert whitelisted
+    version: '1'
+  - name: DEVICE_WITH_VALID_CERT_NOT_WHITELISTED
+    display_name: Device With Valid Cert Not Whitelisted
+    type: OPENVPN
+    category: NETWORK
+    description: Device with valid cert not whitelisted
+    version: '1'
+  - name: AFC_PROVIDER_UPDATED
+    display_name: AFC Provider Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: AFC provider updated for operator
+    version: '1'
+  - name: RN_MULTI_CARRIER_SELECTION_UPDATED
+    display_name: RN Mode Selection Update
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: RN Mode Selection Updated
+    version: '1'
+  - name: RN_MULTI_CARRIER_MODE_UPDATED
+    display_name: RN Multi-Carrier Mode Update
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: RN Multi-carrier mode Updated
+    version: '1'
+  - name: RN_MULTI_CARRIER_MODE_UPDATED
+    display_name: RN Multi-Carrier Mode Update
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: RN Multi-carrier mode Updated
+    version: '1'
+  - name: MULTI_CARRIER_MODE_UPDATED
+    display_name: Multi-Carrier Mode Update
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Multi-carrier Mode Updated
+    version: '1'
+  - name: AUTO_MUTE_BN_DELAY_SECONDS_ENABLED
+    display_name: Auto-Mute BN Radio Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Auto-mute BN Radio Enabled
+    version: '1'
+  - name: AUTO_MUTE_BN_DELAY_SECONDS_DISABLED
+    display_name: Auto-Mute BN Radio Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Auto-mute BN Radio Disabled
+    version: '1'
+  - name: AUTO_MUTE_BN_DELAY_SECONDS_UPDATED
+    display_name: Auto-Mute BN Radio Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Auto-mute BN Radio Updated
+    version: '1'
+  - name: TARGET_RXSI_UPDATED
+    display_name: Uplink Target Received Signal Level Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: User updated Uplink Target Received Signal Level
+    version: '1'
+  - name: MAC_TABLE_ALARM_THRESHOLD_UPDATED
+    display_name: Custom MAC Table Alarm Threshold Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: User updated mac table alarm threshold
+    version: '1'
+  - name: CARRIER_ENABLED
+    display_name: Carrier Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Carrier Enabled
+    version: '1'
+  - name: CARRIER_DISABLED
+    display_name: Carrier Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Carrier Disabled
+    version: '1'
+  - name: BUFFER_ALLOCATION_PROFILE_UPDATED
+    display_name: Buffer Allocation Profile Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Buffer Allocation Profile Updated
+    version: '1'
+  - name: RADIO_OPERATOR_ID_LOOKUP_ENABLED
+    display_name: OP-ID Lookup Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Operator ID Lookup Enabled
+    version: '1'
+  - name: RADIO_OPERATOR_ID_LOOKUP_DISABLED
+    display_name: OP-ID Lookup Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Operator ID Lookup Disabled
+    version: '1'
+  - name: NEW_DEVICE_INSTALLED
+    display_name: New Device Installed
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: New Device Installed
+    version: '1'
+  - name: ORPHAN_BN_ADDED
+    display_name: New BN Added
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: A new BN is onboarded and ready for installation
+    version: '1'
+  - name: DEVICE_REMOVED
+    display_name: Device Removed
+    type: DEVICE_REMOVED
+    category: NETWORK
+    description: Device Removed
+    version: '1'
+  - name: PREFERRED_BN_ENABLED
+    display_name: Primary BN Feature Enabled
+    type: PREFERRED_BN_ENABLED
+    category: NETWORK
+    description: Primary BN feature enabled
+    version: '1'
+  - name: PREFERRED_BN_DISABLED
+    display_name: Primary BN Feature Disabled
+    type: PREFERRED_BN_DISABLED
+    category: NETWORK
+    description: Primary BN feature disabled
+    version: '1'
+  - name: PREFERRED_BN_CONFIG_MODIFIED
+    display_name: Primary BN Sub-Config Modified
+    type: PREFERRED_BN_CONFIG_MODIFIED
+    category: NETWORK
+    description: Primary BN sub-config modified
+    version: '1'
+  - name: DEVICE_METRICS_DIALOUT_CONNECTED
+    display_name: Device Metrics Dial-Out Connected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Metrics Dial-out Connected
+    version: '1'
+  - name: DEVICE_METRICS_DIALOUT_DISCONNECTED
+    display_name: Device Metrics Dial-Out Disconnected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Metrics Dial-out Disconnected
+    version: '1'
+  - name: DEVICE_REGISTRATION_DIALOUT_CONNECTED
+    display_name: Device Registration Dial-Out Connected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Registration Dial-out Connected
+    version: '1'
+  - name: DEVICE_REGISTRATION_DIALOUT_DISCONNECTED
+    display_name: Device Registration Dial-Out Disconnected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Registration Dial-out Disconnected
+    version: '1'
+  - name: DEVICE_RSSI_DIALOUT_CONNECTED
+    display_name: Device Rssi Dial-Out Connected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Rssi Dial-out Connected
+    version: '1'
+  - name: DEVICE_RSSI_DIALOUT_DISCONNECTED
+    display_name: Device Rssi Dial-Out Disconnected
+    type: DIAL-OUT-HEALTH-CHECK
+    category: NETWORK
+    description: Device Rssi Dial-out Disconnected
+    version: '1'
+  - name: MULTICAST_MODE_ENABLED
+    display_name: Multicast Support Enabled
+    type: MULTICAST_MODE_ENABLED
+    category: NETWORK
+    description: Multicast Support Enabled
+    version: '1'
+  - name: MULTICAST_MODE_DISABLED
+    display_name: Multicast Support Disabled
+    type: MULTICAST_MODE_DISABLED
+    category: NETWORK
+    description: Multicast Support Disabled
+    version: '1'
+  - name: GRANT_PARAMETERS_DECISION_SUCCESS_ON_INQUIRY
+    display_name: Grant Parameters Decided
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Grant Parameters Decided
+    version: '1'
+  - name: GRANT_PARAMETERS_DECISION_FAILURE_ON_INQUIRY
+    display_name: Grant Parameters Decision Failure Based On Spectrum Availability
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Grant Parameters Decision Failure Based On Spectrum Availability
+    version: '1'
+  - name: GRANT_PARAMETERS_DECISION_FAILURE
+    display_name: Grant Parameters Decision Failure
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Grant Parameters Decision Failure
+    version: '1'
+  - name: REUSE_DECISION_SUCCESSFUL
+    display_name: Non-Conflicting AFC Frequencies Assigned
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: Assigned non-conflicting frequencies to AFC carriers
+    version: '1'
+  - name: SAS_SERVER_ERROR
+    display_name: SAS Server Unreachable
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: SAS Server Unreachable
+    version: '1'
+  - name: SAS_SERVER_ERROR
+    display_name: SAS Server Unreachable
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: SAS Server Unreachable
+    version: '1'
+  - name: SAS_SERVER_ERROR
+    display_name: SAS Server Unreachable
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: SAS Server Unreachable
+    version: '1'
+  - name: SAS_SERVER_ERROR
+    display_name: SAS Server Unreachable
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: SAS Server Unreachable
+    version: '1'
+  - name: AFC_SERVER_ERROR
+    display_name: AFC Server Unreachable
+    type: SPECTRUM_DECISION
+    category: SPECTRUM
+    description: AFC Server Unreachable
+    version: '1'
+  - name: CUSTOM_SLA_PROFILE_ADDED
+    display_name: Custom SLA Created
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Custom SLA Created
+    version: '1'
+  - name: CUSTOM_SLA_PROFILE_UPDATED
+    display_name: Custom SLA Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Custom SLA Updated
+    version: '1'
+  - name: CUSTOM_SLA_PROFILE_DELETED
+    display_name: Custom SLA Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Custom SLA Deleted
+    version: '1'
+  - name: SLA_ENFORCED
+    display_name: SLA Enforced
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: SLA enforced on the operator
+    version: '1'
+  - name: SLA_RELAXED
+    display_name: SLA Relaxed
+    type: OPERATOR_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: SLA relaxed on the operator
+    version: '1'
+  - name: DHCPV4_RELAY_AGENT_ENABLED
+    display_name: DHCPv4 Relay Agent Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv4 Relay Agent Enabled
+    version: '1'
+  - name: DHCPV4_RELAY_AGENT_DISABLED
+    display_name: DHCPv4 Relay Agent Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv4 Relay Agent Disabled
+    version: '1'
+  - name: DHCPV6_RELAY_AGENT_ENABLED
+    display_name: DHCPv6 Relay Agent Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Relay Agent Enabled
+    version: '1'
+  - name: DHCPV6_RELAY_AGENT_DISABLED
+    display_name: DHCPv6 Relay Agent Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Relay Agent Disabled
+    version: '1'
+  - name: DHCPV6_INTERFACE_IDENTIFIER_TYPE_ENABLED
+    display_name: DHCPv6 Interface Identifier Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Interface Identifier Enabled
+    version: '1'
+  - name: DHCPV6_INTERFACE_IDENTIFIER_TYPE_DISABLED
+    display_name: DHCPv6 Interface Identifier Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Interface Identifier Disabled
+    version: '1'
+  - name: DHCPV6_REMOTE_IDENTIFIER_TYPE_ENABLED
+    display_name: DHCPv6 Remote Identifier Enabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Remote Identifier Enabled
+    version: '1'
+  - name: DHCPV6_REMOTE_IDENTIFIER_TYPE_DISABLED
+    display_name: DHCPv6 Remote Identifier Disabled
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: DHCPv6 Remote Identifier Disabled
+    version: '1'
+  - name: CLEAR_MAC_TABLE_SUCCESS
+    display_name: Flush MAC Address Success
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Flush MAC Address Success
+    version: '1'
+  - name: CLEAR_MAC_TABLE_FAILED
+    display_name: Flush MAC Address Failed
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Flush MAC Address Failed
+    version: '1'
+  - name: RESET_ETHERNET_INTERFACE_SUCCESS
+    display_name: Reset Ethernet Interface Success
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Reset Ethernet Interface Success
+    version: '1'
+  - name: RESET_ETHERNET_INTERFACE_FAILED
+    display_name: Reset Ethernet Interface Failed
+    type: CONFIG_OPERATION
+    category: OPERATIONS
+    description: Reset Ethernet Interface Failed
+    version: '1'
+  - name: CPI_ID_CHANGED_FOR_DEVICE
+    display_name: CPI ID For Device Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: CPI ID For Device Updated
+    version: '1'
+  - name: DEVICE_ALARM_RAISED
+    display_name: Alarm Raised
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm raised by the device/TCS
+    version: '1'
+  - name: DEVICE_ALARM_CLEARED
+    display_name: Alarm Cleared
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm cleared by the device/TCS
+    version: '1'
+  - name: DEVICE_ALARM_UPDATED
+    display_name: Alarm Updated
+    type: DEVICE_ALARMS
+    category: ALARM
+    description: Alarm updated by the device/TCS
+    version: '1'
+  - name: DEVICE_REBOOT_INITIATED
+    display_name: Device Reboot Initiated
+    type: DEVICE_REBOOT
+    category: OPERATIONS
+    description: Device reboot operation initiated
+    version: '1'
+  - name: DIALOUT_SUCCESS
+    display_name: Service Subscription Succeeded
+    type: DIALOUT
+    category: OPERATIONS
+    description: Alarm device dialout success
+    version: '1'
+  - name: DIALOUT_FAILURE
+    display_name: Service Subscription Failed
+    type: DIALOUT
+    category: OPERATIONS
+    description: Alarm device dialout failure
+    version: '1'
+  - name: SECTOR_ACTIVATED
+    display_name: Sector Activated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Sector Activated
+    version: '1'
+  - name: CELL_ACTIVATED
+    display_name: Cell Activated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Cell Activated
+    version: '1'
+  - name: SITE_ACTIVATED
+    display_name: Site Activated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Site Activated
+    version: '1'
+  - name: MARKET_ACTIVATED
+    display_name: Market Activated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Market Activated
+    version: '1'
+  - name: REGION_ACTIVATED
+    display_name: Region Activated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Region Activated
+    version: '1'
+  - name: FCC_OR_ID_UPDATED
+    display_name: FCC OR-ID Updated
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: FCC OR-ID Updated
+    version: '1'
+  - name: FCC_OR_ID_OVERRIDDEN
+    display_name: FCC OR-ID Overridden
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: FCC OR-ID Overridden
+    version: '1'
+  - name: FCC_OR_ID_INHERITED
+    display_name: FCC OR-ID Inherited
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: FCC OR-ID Inherited
+    version: '1'
+  - name: ULTIMATE_CAUSE_IDENTIFIED
+    display_name: Ultimate Cause(s) Identified
+    type: ADMIN
+    category: NETWORK
+    description: Ultimate Cause(s) Identified
+    version: '1'
+  - name: OPERATOR_UPDATED
+    display_name: Operator Details Changed
+    type: OPERATOR_UPDATED
+    category: NETWORK
+    description: Operator Details Changed By User
+    version: '1'
+  - name: SECTOR_HEATMAP_ADDED
+    display_name: Heatmap Added
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Heatmap Added
+    version: '1'
+  - name: SECTOR_HEATMAP_PUBLISHED
+    display_name: Heatmap Published
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Heatmap Published
+    version: '1'
+  - name: SECTOR_HEATMAP_UNPUBLISHED
+    display_name: Heatmap Unpublished
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Heatmap Unpublished
+    version: '1'
+  - name: SECTOR_HEATMAP_DELETED
+    display_name: Heatmap Deleted
+    type: NETWORK_CONFIGURATION
+    category: NETWORK
+    description: Heatmap Deleted
+    version: '1'
+  - name: RN_SWITCHED_BN
+    display_name: RN Switched BN
+    type: DEVICE_ACTIVITY
+    category: NETWORK
+    description: RN Switched BN
+    version: '1'
+  - name: TCA_CREATED
+    display_name: Threshold Crossing Alarm Created
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Threshold Crossing Alarm created successfully
+    version: '1'
+  - name: TCA_MODIFIED
+    display_name: Threshold Crossing Alarm Modified
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Threshold Crossing Alarm modified successfully (Change in thresholds, severity, duration
+      or scope)
+    version: '1'
+  - name: TCA_DELETED
+    display_name: Threshold Crossing Alarm Deleted
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Threshold Crossing Alarm deleted successfully
+    version: '1'
+  - name: TCA_ALERT_ENABLED
+    display_name: Threshold Crossing Alarm's Alert Enabled
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert associated with Threshold Crossing Alarm enabled successfully
+    version: '1'
+  - name: TCA_ALERT_DISABLED
+    display_name: Threshold Crossing Alarm's Alert Disabled
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Alert associated with Threshold Crossing Alarm disabled successfully
+    version: '1'
+  - name: TCA_ENABLED
+    display_name: Threshold Crossing Alarm Enabled
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Threshold Crossing Alarm enabled successfully
+    version: '1'
+  - name: TCA_DISABLED
+    display_name: Threshold Crossing Alarm Disabled
+    type: TCA_MANAGEMENT_OPERATIONS
+    category: CONFIG
+    description: Threshold Crossing Alarm disabled successfully
+    version: '1'

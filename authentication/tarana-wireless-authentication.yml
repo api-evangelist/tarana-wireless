@@ -1,0 +1,121 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  Live anonymous probes of https://api.tcs.taranawireless.com/,
+  https://idp.tcs.taranawireless.com/, https://portal.tcs.taranawireless.com/northbound/,
+  https://support.taranawireless.com/.well-known/openid-configuration, plus the operator
+  portal's anonymous runtime configuration at
+  https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+name: Tarana Wireless — authentication profile
+note: >-
+  NO OpenAPI securitySchemes could be read: the TCS northbound OpenAPI sits behind the same
+  RBAC wall as the API itself, so derive-authentication.py had nothing to parse. Everything
+  below was established by probing the live edges and by reading the configuration Tarana
+  serves anonymously. Where a mechanism is implied but not stated by Tarana, it is marked
+  inferred and the evidence is named — nothing here is asserted from the shape of the URL
+  alone.
+gated: true
+gate: >-
+  The northbound API reference (Swagger UI) and every Swagger/OpenAPI sibling path return
+  HTTP 403 with the plain-text body "RBAC: access denied" to anonymous callers. Credentials
+  are issued to an operator with a TCS tenant; there is no self-service developer signup.
+schemes:
+- id: tcs-portal-session
+  surface: TCS operator portal (portal.tcs.taranawireless.com)
+  type: oauth2
+  flow: authorization_code
+  authorization_server: https://idp.tcs.taranawireless.com
+  evidence:
+  - url: https://idp.tcs.taranawireless.com/oauth2/idpresponse
+    note: >-
+      Named verbatim in the portal's env-config.js as the IdP response URL. The host answers
+      unknown paths with {"error":"This URL doesn't exist on the authorization server."},
+      which confirms it is an OAuth 2.0 authorization server rather than a static host.
+    status: 404
+  discovery_document: false
+  discovery_note: >-
+    /.well-known/openid-configuration, /.well-known/oauth-authorization-server,
+    /.well-known/oauth-protected-resource and /.well-known/jwks.json all return 404 on the
+    IdP host. The authorization server publishes no discovery metadata, so an OAuth client
+    cannot be configured without out-of-band instructions.
+  mfa: true
+  mfa_evidence: >-
+    The TCS event vocabulary defines an MFA_MANAGEMENT_OPERATIONS event type with three
+    events, so multi-factor enrolment and management are first-class portal operations.
+- id: tcs-northbound-api-credential
+  surface: TCS northbound REST API (portal.tcs.taranawireless.com/northbound)
+  type: unknown
+  status: gated
+  note: >-
+    The credential type is NOT documented on any anonymously reachable Tarana surface and is
+    deliberately not guessed here. Two pieces of real evidence bracket it: the portal's own
+    service map names a security-service exposing /api/tcs/v1/authorization and
+    /api/tcs/v1/clients/key, which is the shape of a client-key issuance and authorization
+    endpoint pair; and the TCS event vocabulary carries no separate API-token event type,
+    which suggests keys are issued through the same operator/user management surface. Confirm
+    against the TCS Administration Guide or the gated Swagger UI before integrating.
+  evidence:
+  - url: https://portal.tcs.taranawireless.com/northbound/swagger-ui.html
+    status: 403
+    note: 'Body: "RBAC: access denied".'
+  - url: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+    status: 200
+    note: >-
+      Public. Names security-service endpoints /api/tcs/v1/authorization and
+      /api/tcs/v1/clients/key, and an apigw block whose apikey value is the literal
+      placeholder SECRET_FROM_VAULT (no live secret is exposed).
+- id: tcs-api-gateway
+  surface: TCS API gateway (api.tcs.taranawireless.com)
+  type: apiKey
+  in: header
+  status: gated
+  evidence:
+  - url: https://api.tcs.taranawireless.com/
+    status: 403
+    note: >-
+      AWS API Gateway. Responds with x-amzn-errortype MissingAuthenticationTokenException and
+      the body {"data":null,"error":{"code":403,"message":"The HTTP method or resources may
+      not be supported.","status":"Unsupported API"}}. MissingAuthenticationTokenException is
+      the standard AWS API Gateway response to an unsigned/unkeyed request. CORS
+      access-control-allow-origin is pinned to https://portal.tcs.taranawireless.com, so this
+      edge is provisioned for the first-party portal, not as a public developer API.
+- id: support-portal-oidc
+  surface: Salesforce Experience Cloud support portal (support.taranawireless.com)
+  type: openIdConnect
+  openIdConnectUrl: https://support.taranawireless.com/.well-known/openid-configuration
+  artifact: well-known/tarana-wireless-support-openid-configuration.json
+  status: published
+  evidence:
+  - url: https://support.taranawireless.com/.well-known/openid-configuration
+    status: 200
+    note: >-
+      Complete OpenID Provider Metadata: authorization, token, revocation, introspection,
+      userinfo, registration and JWKS endpoints; RS256 id_token signing; DPoP signing
+      algorithms advertised; client_secret_post / client_secret_basic / private_key_jwt token
+      endpoint auth. Scopes are the Salesforce platform set, not Tarana product scopes.
+  scope: >-
+    This governs sign-in to the customer support and knowledge portal only. It is NOT the
+    authorization server for the TCS northbound API — that is idp.tcs.taranawireless.com.
+oauth_scopes_published: false
+oauth_scopes_note: >-
+  No Tarana-defined scope reference is reachable. The only scopes list found anywhere is the
+  Salesforce platform scope set in the support portal's OIDC metadata, which describes
+  Salesforce APIs and not Tarana's. scopes/ is deliberately not written rather than filled
+  with a foreign vocabulary.
+authorization_model:
+  style: role-based access control (RBAC), enforced at the ingress
+  evidence: >-
+    Anonymous requests to gated paths are refused by the Istio ingress with the literal
+    string "RBAC: access denied", and the portal env-config exposes an HBAC block with a
+    ROLES_WITH_GLOBAL_ACCESS list.
+  documented_roles:
+  - NOC Operator
+  - NOC L1 User
+  - OP Admin
+  roles_source: >-
+    Role names appear in Tarana's own operator-portal documentation surface; the machine
+    definition is not public.
+  hierarchy: >-
+    Access is additionally scoped by the network hierarchy the portal filters on — operator,
+    region, market, cell, site, sector, device — which is the same hierarchy carried on every
+    webhook payload.

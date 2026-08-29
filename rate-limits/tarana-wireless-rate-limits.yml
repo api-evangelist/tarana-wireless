@@ -1,0 +1,49 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  Live anonymous responses from api.tcs.taranawireless.com and
+  portal.tcs.taranawireless.com/northbound, plus
+  https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+name: Tarana Cloud Suite — rate limits
+limit_count: 0
+rate_limits: []
+headers: []
+status_on_exhaustion: unknown
+retry_after: unknown
+note: >-
+  An honest zero. No rate limit is documented on any anonymously reachable Tarana surface, and
+  none could be observed: every northbound path returns 403 "RBAC: access denied" and the API
+  gateway returns 403 MissingAuthenticationTokenException before any limiter would be reached,
+  so no RateLimit-*, X-RateLimit-* or Retry-After header was ever emitted to observe. The
+  limits published in the docs that DO exist are behind the same tenant login as the API.
+observed_response_headers:
+  host: api.tcs.taranawireless.com
+  status: 403
+  headers_present:
+  - x-amzn-requestid
+  - x-amz-apigw-id
+  - x-amzn-errortype
+  - strict-transport-security
+  - x-frame-options
+  - x-content-type-options
+  - content-security-policy
+  - referrer-policy
+  - access-control-allow-origin
+  rate_limit_headers_present: false
+not_rate_limits:
+  note: >-
+    The values below are the FIRST-PARTY PORTAL's client-side page and batch caps, published
+    in the portal's own runtime config. They are recorded here only so nobody mistakes them
+    for published API rate limits — they are not. They do indicate the volumes the backing API
+    is expected to serve.
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+  values:
+    max_devices_per_ack_nack_batch: 1000
+    max_users_per_bulk_action: 100
+    max_slas_per_tenant: 200
+    max_kpis_per_performance_chart: 12
+    max_entities_per_performance_chart: 12
+    devices_per_map_render: 2048
+    alarms_per_table: 2048
+    largest_page_size_observed: 5000
+    portal_poll_interval_ms: 60000

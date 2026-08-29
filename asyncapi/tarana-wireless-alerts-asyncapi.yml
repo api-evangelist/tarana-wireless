@@ -1,0 +1,678 @@
+asyncapi: 3.0.0
+info:
+  title: Tarana Cloud Suite — Alert Notification Webhooks
+  version: '0.9'
+  description: DERIVED, NOT PUBLISHED BY TARANA. Tarana Wireless publishes no AsyncAPI document. This
+    document is a faithful AsyncAPI 3.0.0 rendering of the TCS alert-notification webhook contract that
+    Tarana does publish, anonymously and unauthenticated, in the operator portal's runtime configuration
+    at https://portal.tcs.taranawireless.com/operator-portal/common-config.js (window._CUSTOM_ALERTS_CONFIG_).
+    Every alert type, every payload field name, every required/optional split and every example value
+    below is copied from that file. Nothing was invented. The version 0.9 mirrors APP_VERSION in the portal
+    env-config; it is not a Tarana-assigned schema version. Delivery semantics Tarana does not publish
+    — signature scheme, retry policy, ordering — are deliberately absent rather than guessed.
+  contact:
+    name: Tarana Wireless Support
+    url: https://support.taranawireless.com/s/
+  externalDocs:
+    description: Source configuration document
+    url: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+defaultContentType: application/json
+servers:
+  operatorEndpoint:
+    host: '{operator-webhook-host}'
+    protocol: https
+    description: The destination is supplied by the operator, not by Tarana. It is registered in the TCS
+      operator portal under Admin -> Webhooks -> Add New Webhook (name + URL + up to three custom headers
+      + a secret key). TCS is the sender.
+    variables:
+      operator-webhook-host:
+        description: Host of the operator-owned HTTPS endpoint registered in TCS.
+        default: webhook.example.com
+channels:
+  alertNotifications:
+    address: /{operator-webhook-path}
+    title: TCS alert notification webhook
+    description: A single operator-registered HTTPS endpoint receives every alert type the operator has
+      subscribed that webhook to. TCS POSTs one JSON object per notification.
+    servers:
+    - $ref: '#/servers/operatorEndpoint'
+    parameters:
+      operator-webhook-path:
+        description: Path component of the operator-registered webhook URL.
+    messages:
+      DEVICE_CONNECTED:
+        $ref: '#/components/messages/DEVICE_CONNECTED'
+      DEVICE_DISCONNECTED:
+        $ref: '#/components/messages/DEVICE_DISCONNECTED'
+      RN_ETHERNET_PORT_IS_DOWN:
+        $ref: '#/components/messages/RN_ETHERNET_PORT_IS_DOWN'
+      RN_ETHERNET_PORT_IS_UP:
+        $ref: '#/components/messages/RN_ETHERNET_PORT_IS_UP'
+      BN_IS_NOT_REACHABLE:
+        $ref: '#/components/messages/BN_IS_NOT_REACHABLE'
+      RADIO_CARRIER_MUTED:
+        $ref: '#/components/messages/RADIO_CARRIER_MUTED'
+      RADIO_CARRIER_ENABLED:
+        $ref: '#/components/messages/RADIO_CARRIER_ENABLED'
+      CRITICAL_ALARM_RAISED:
+        $ref: '#/components/messages/CRITICAL_ALARM_RAISED'
+      CRITICAL_ALARM_CLEARED:
+        $ref: '#/components/messages/CRITICAL_ALARM_CLEARED'
+      NEW_DEVICE_INSTALLED:
+        $ref: '#/components/messages/NEW_DEVICE_INSTALLED'
+      NEW_BN_ONBOARDED:
+        $ref: '#/components/messages/NEW_BN_ONBOARDED'
+      TCA_ALARM_TRIGGERED:
+        $ref: '#/components/messages/TCA_ALARM_TRIGGERED'
+operations:
+  sendAlertNotification:
+    action: send
+    channel:
+      $ref: '#/channels/alertNotifications'
+    title: Deliver a TCS alert notification
+    description: TCS sends the notification; the operator endpoint receives it. Retry and signature semantics
+      are not documented by Tarana.
+    messages:
+    - $ref: '#/channels/alertNotifications/messages/DEVICE_CONNECTED'
+    - $ref: '#/channels/alertNotifications/messages/DEVICE_DISCONNECTED'
+    - $ref: '#/channels/alertNotifications/messages/RN_ETHERNET_PORT_IS_DOWN'
+    - $ref: '#/channels/alertNotifications/messages/RN_ETHERNET_PORT_IS_UP'
+    - $ref: '#/channels/alertNotifications/messages/BN_IS_NOT_REACHABLE'
+    - $ref: '#/channels/alertNotifications/messages/RADIO_CARRIER_MUTED'
+    - $ref: '#/channels/alertNotifications/messages/RADIO_CARRIER_ENABLED'
+    - $ref: '#/channels/alertNotifications/messages/CRITICAL_ALARM_RAISED'
+    - $ref: '#/channels/alertNotifications/messages/CRITICAL_ALARM_CLEARED'
+    - $ref: '#/channels/alertNotifications/messages/NEW_DEVICE_INSTALLED'
+    - $ref: '#/channels/alertNotifications/messages/NEW_BN_ONBOARDED'
+    - $ref: '#/channels/alertNotifications/messages/TCA_ALARM_TRIGGERED'
+components:
+  messages:
+    DEVICE_CONNECTED:
+      name: DEVICE_CONNECTED
+      title: Device Connected
+      contentType: application/json
+      summary: 'TCS alert notification: Device Connected'
+      payload:
+        type: object
+        required:
+        - alertName
+        - deviceDisconnectReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: &id001
+            type: string
+            description: Name of the alert
+            examples:
+            - Test_Alert
+          notificationGeneratedAt: &id002
+            type: string
+            description: Time when the notification was generated (rendered as a formatted UTC date string,
+              e.g. "05 Feb 2024 14:54:32 UTC")
+            examples:
+            - 05 Feb 2024 14:54:32 UTC
+          deviceHostname: &id003
+            type: string
+            description: Hostname of the device
+            examples:
+            - Test_Hostname
+          deviceSerialNumber: &id004
+            type: string
+            description: Serial number of the device
+            examples:
+            - Test_SerialNumber
+          deviceType: &id005
+            type: string
+            description: Device Type
+            examples:
+            - RN
+          deviceSoftware: &id006
+            type: string
+            description: Device Software Version
+            examples:
+            - SYS.A3.R10.XXX.3.013.000.00
+          operator: &id007
+            type: string
+            description: Operator Name
+            examples:
+            - Tarana
+          region: &id008
+            type: string
+            description: Region Name
+            examples:
+            - Test_Region
+          market: &id009
+            type: string
+            description: Market Name
+            examples:
+            - Test_Market
+          site: &id010
+            type: string
+            description: Site Name
+            examples:
+            - Test_Site
+          cell: &id011
+            type: string
+            description: Cell Name
+            examples:
+            - Test_Cell
+          sector: &id012
+            type: string
+            description: Sector Name
+            examples:
+            - Test_Sector
+          deviceUptimeSeconds: &id013
+            type: integer
+            description: Time since the device was rebooted in Seconds
+            examples:
+            - 1234
+          deviceUptime: &id014
+            type: integer
+            description: Time since the device was rebooted
+            examples:
+            - 0d 2h 18m 9s (since 06 Nov 2024 05:52:32 UTC)
+          deviceFirstSeen: &id015
+            type: string
+            description: When the device was first seen (rendered as a formatted UTC date string, e.g.
+              "05 Feb 2024 14:54:32 UTC")
+            examples:
+            - 05 Feb 2024 14:54:32 UTC
+          deviceBootReason: &id016
+            type: string
+            description: Device Boot Reason
+            examples:
+            - Warm Boot
+          deviceDisconnectReason: &id017
+            type: string
+            description: Device Disconnect Reason
+            examples:
+            - Test_DisconnectReason
+          rebootReason:
+            type: string
+            description: Device Reboot Reason
+            examples:
+            - Test_RebootReason
+    DEVICE_DISCONNECTED:
+      name: DEVICE_DISCONNECTED
+      title: Device Disconnected
+      contentType: application/json
+      summary: 'TCS alert notification: Device Disconnected'
+      payload:
+        type: object
+        required:
+        - alertName
+        - deviceDisconnectReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceFirstSeen: *id015
+          deviceBootReason: *id016
+          deviceDisconnectReason: *id017
+    RN_ETHERNET_PORT_IS_DOWN:
+      name: RN_ETHERNET_PORT_IS_DOWN
+      title: RN Ethernet Port Down
+      contentType: application/json
+      summary: 'TCS alert notification: RN Ethernet Port Down'
+      payload:
+        type: object
+        required:
+        - alarmCreatedAt
+        - alarmDescription
+        - alarmName
+        - alarmSeverity
+        - alarmState
+        - alarmType
+        - alertName
+        - deviceBootReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          alarmType: &id018
+            type: string
+            description: Alarm Type
+            examples:
+            - Test_AlarmType
+          alarmName: &id019
+            type: string
+            description: Alarm Name
+            examples:
+            - Test_AlarmName
+          alarmDescription: &id020
+            type: string
+            description: Alarm Description
+            examples:
+            - Test_AlarmDescription
+          alarmCreatedAt: &id021
+            type: string
+            description: Alarm Created At (rendered as a formatted UTC date string, e.g. "05 Feb 2024
+              14:54:32 UTC")
+            examples:
+            - 05 Feb 2024 14:54:32 UTC
+          alarmSeverity: &id022
+            type: integer
+            description: Alarm Severity
+            examples:
+            - Critical
+          alarmState: &id023
+            type: string
+            description: Alarm State
+            examples:
+            - Alarm Raised
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+    RN_ETHERNET_PORT_IS_UP:
+      name: RN_ETHERNET_PORT_IS_UP
+      title: RN Ethernet Port Up
+      contentType: application/json
+      summary: 'TCS alert notification: RN Ethernet Port Up'
+      payload:
+        type: object
+        required:
+        - alarmCreatedAt
+        - alarmDescription
+        - alarmName
+        - alarmSeverity
+        - alarmState
+        - alarmType
+        - alertName
+        - deviceBootReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          alarmType: *id018
+          alarmName: *id019
+          alarmDescription: *id020
+          alarmCreatedAt: *id021
+          alarmSeverity: *id022
+          alarmState: *id023
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+    BN_IS_NOT_REACHABLE:
+      name: BN_IS_NOT_REACHABLE
+      title: BN Not Reachable
+      contentType: application/json
+      summary: 'TCS alert notification: BN Not Reachable'
+      payload:
+        type: object
+        required:
+        - alertName
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+    RADIO_CARRIER_MUTED:
+      name: RADIO_CARRIER_MUTED
+      title: Radio Carrier Down
+      contentType: application/json
+      summary: 'TCS alert notification: Radio Carrier Down'
+      payload:
+        type: object
+        required:
+        - alertName
+        - carrierDisabled
+        - connectedBnId
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - lowerFrequencyMhz
+        - notificationGeneratedAt
+        - upperFrequencyMhz
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceBootReason: *id016
+          carrierDisabled: &id024
+            type: integer
+            description: CBSD Grant Disabled Carrier
+            examples:
+            - 0
+          connectedBnId: &id025
+            type: string
+            description: CBSD Connected BN
+            examples:
+            - Test_BN_SerialNumber
+          lowerFrequencyMhz: &id026
+            type: integer
+            description: CBSD Grant Lower Frequency [Mhz]
+            examples:
+            - 3660
+          upperFrequencyMhz: &id027
+            type: integer
+            description: CBSD Grant Upper Frequency [Mhz]
+            examples:
+            - 3700
+    RADIO_CARRIER_ENABLED:
+      name: RADIO_CARRIER_ENABLED
+      title: Radio Carrier Up
+      contentType: application/json
+      summary: 'TCS alert notification: Radio Carrier Up'
+      payload:
+        type: object
+        required:
+        - alertName
+        - carrierDisabled
+        - connectedBnId
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - lowerFrequencyMhz
+        - notificationGeneratedAt
+        - upperFrequencyMhz
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceBootReason: *id016
+          carrierDisabled: *id024
+          connectedBnId: *id025
+          lowerFrequencyMhz: *id026
+          upperFrequencyMhz: *id027
+    CRITICAL_ALARM_RAISED:
+      name: CRITICAL_ALARM_RAISED
+      title: Alarm Raised
+      contentType: application/json
+      summary: 'TCS alert notification: Alarm Raised'
+      payload:
+        type: object
+        required:
+        - alarmCreatedAt
+        - alarmDescription
+        - alarmName
+        - alarmResource
+        - alarmSeverity
+        - alarmState
+        - alertName
+        - deviceBootReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          alarmName: *id019
+          alarmSeverity: *id022
+          alarmResource: &id028
+            type: string
+            description: Alarm Resource
+            examples:
+            - Test_AlarmResource
+          alarmState: *id023
+          alarmDescription: *id020
+          alarmCreatedAt: *id021
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+    CRITICAL_ALARM_CLEARED:
+      name: CRITICAL_ALARM_CLEARED
+      title: Alarm Cleared
+      contentType: application/json
+      summary: 'TCS alert notification: Alarm Cleared'
+      payload:
+        type: object
+        required:
+        - alarmCreatedAt
+        - alarmDescription
+        - alarmName
+        - alarmResource
+        - alarmSeverity
+        - alarmState
+        - alertName
+        - deviceBootReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          alarmName: *id019
+          alarmSeverity: *id022
+          alarmResource: *id028
+          alarmState: *id023
+          alarmDescription: *id020
+          alarmCreatedAt: *id021
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+    NEW_DEVICE_INSTALLED:
+      name: NEW_DEVICE_INSTALLED
+      title: New Device Installed
+      contentType: application/json
+      summary: 'TCS alert notification: New Device Installed'
+      payload:
+        type: object
+        required:
+        - alertName
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016
+          connectedBnSerialNumber:
+            type: string
+            description: Serial Number of the BN currently serving the RN
+            examples:
+            - Test_Hostname
+          connectedBnHostname:
+            type: string
+            description: Hostname of the BN currently serving the RN
+            examples:
+            - Test_Hostname
+          svlan:
+            type: integer
+            description: SVLAN (Data VLAN) reported by the connected BN
+            examples:
+            - 2000
+          rnMacAddress:
+            type: string
+            description: MAC Address of the RN
+            examples:
+            - 00:1A:2B:3C:4D:5E
+          bnManagementIPv4:
+            type: string
+            description: IPv4 management IP address of the BN
+            examples:
+            - 192.168.0.1
+          bnManagementIPv6:
+            type: string
+            description: IPv6 management IP address of the BN
+            examples:
+            - 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+    NEW_BN_ONBOARDED:
+      name: NEW_BN_ONBOARDED
+      title: New BN Onboarded
+      contentType: application/json
+      summary: 'TCS alert notification: New BN Onboarded'
+      payload:
+        type: object
+        required:
+        - alertName
+        - deviceSerialNumber
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          operator: *id007
+    TCA_ALARM_TRIGGERED:
+      name: TCA_ALARM_TRIGGERED
+      title: TCA Alarm Triggered
+      contentType: application/json
+      summary: 'TCS alert notification: TCA Alarm Triggered'
+      payload:
+        type: object
+        required:
+        - alarmCreatedAt
+        - alarmDescription
+        - alarmName
+        - alarmResource
+        - alarmSeverity
+        - alarmState
+        - alertName
+        - deviceBootReason
+        - deviceHostname
+        - deviceSerialNumber
+        - deviceSoftware
+        - deviceType
+        - deviceUptimeSeconds
+        - notificationGeneratedAt
+        properties:
+          alertName: *id001
+          notificationGeneratedAt: *id002
+          alarmName: *id019
+          alarmSeverity: *id022
+          alarmResource: *id028
+          alarmState: *id023
+          alarmDescription: *id020
+          alarmCreatedAt: *id021
+          deviceHostname: *id003
+          deviceSerialNumber: *id004
+          deviceType: *id005
+          deviceSoftware: *id006
+          operator: *id007
+          region: *id008
+          market: *id009
+          site: *id010
+          cell: *id011
+          sector: *id012
+          deviceUptimeSeconds: *id013
+          deviceUptime: *id014
+          deviceBootReason: *id016

@@ -1,0 +1,27 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  DNS and HTTP probes for a trust center, plus a search of every anonymously readable Tarana
+  surface for named certifications
+name: Tarana Wireless — trust center
+published: false
+certifications: []
+note: >-
+  NO trust center and NO named security certification could be found. This is a recorded
+  absence, not an unchecked field: trust.taranawireless.com does not resolve in DNS, no
+  /trust, /security or /compliance page is linked from any readable Tarana surface, and no
+  SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP claim appears anywhere anonymously reachable.
+  Consequently no `Compliance` or `TrustCenter` pointer is emitted in apis.yml. Tarana DOES
+  publish substantial regulatory conformance — FCC Part 96 CBRS, 6 GHz AFC, ETSI — but that is
+  spectrum regulation, not an information-security compliance program, and the two are not
+  interchangeable for a buyer doing vendor review of a multi-tenant SaaS that holds their
+  entire network topology.
+evidence:
+- url: https://trust.taranawireless.com/
+  status: 0
+  note: NXDOMAIN — host does not resolve.
+- url: https://www.taranawireless.com/legal/
+  status: 200
+  note: >-
+    Carries privacy-policy, terms-and-conditions, tcs-terms-of-use and sms-unlock-terms
+    anchors. No certification or trust section.

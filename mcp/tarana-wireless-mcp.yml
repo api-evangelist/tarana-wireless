@@ -1,0 +1,33 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  Web search for a Tarana/TCS MCP server, plus direct probes of /mcp, /sse and tools/list on
+  every Tarana host discovered during contract discovery
+name: Tarana Wireless — MCP posture
+status: none
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: searched
+tools: []
+note: >-
+  Tarana Wireless ships NO MCP server — no hosted remote endpoint and no stdio package. No
+  candidate tool list was derived either, and that is deliberate: deriving MCP tools requires
+  an OpenAPI to bind them to, and the TCS northbound OpenAPI is RBAC-gated (403 "RBAC: access
+  denied"), so any tool list written here would be invented from product marketing rather than
+  from operations that provably exist. mode: none with an empty tools[] is the honest record.
+  No `MCPServer` pointer is emitted in apis.yml.
+searched:
+- surface: npm / PyPI
+  result: no @tarana*/mcp or tarana-mcp package
+- surface: github.com/TaranaWireless
+  result: 0 public repositories
+- surface: portal.tcs.taranawireless.com
+  result: no /mcp or /sse path; all non-portal paths return 403 RBAC
+if_this_changes: >-
+  The material that a real MCP server would be built from already exists and is public: 160
+  alarm codes, 326 event types, 12 webhook alert types and a 48-field notification payload
+  schema. What is missing is the callable contract underneath them.

@@ -1,0 +1,94 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  https://api.status.io/1.0/status/63337aa16366bf053fa30260 (the public Status.io API behind
+  status.taranawireless.com), https://portal.tcs.taranawireless.com/operator-portal/env-config.js,
+  https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+name: Tarana Wireless — lifecycle, status and versioning
+status_page:
+  published: true
+  url: https://status.taranawireless.com/
+  title: Tarana Wireless TCS System Status
+  provider: Status.io
+  machine_readable: true
+  api: https://api.status.io/1.0/status/63337aa16366bf053fa30260
+  api_status: 200
+  note: >-
+    A genuinely machine-readable status surface — the Status.io JSON API answers anonymously
+    with per-component state and timestamps, so an agent can check TCS health without
+    scraping. Historical incidents are at
+    https://status.taranawireless.com/pages/history/63337aa16366bf053fa30260 (200).
+  components:
+  - group: Tarana Cloud Suite (TCS)
+    items:
+    - Portal Access
+    - CBRS SAS Domain Proxy
+    - Federated SAS Portal (External)
+    - Google SAS Portal (External)
+    - AFC Domain Proxy
+    - Comsearch AFC (External)
+    - Federated Wireless AFC (External)
+  - group: Tarana Support Portal
+    items:
+    - Support Portal
+  components_note: >-
+    Notably, Tarana publishes the health of its EXTERNAL spectrum-coordination dependencies
+    (Google SAS, Federated SAS, Comsearch AFC, Federated Wireless AFC) alongside its own. For
+    a CBRS/6 GHz operator those are the dependencies that actually take a network off the air.
+    The northbound API is not broken out as its own component; it is covered by Portal Access.
+  observed_2026_08_29:
+    status_overall: Operational
+    last_updated: '2026-08-28T04:01:25.751Z'
+versioning:
+  api:
+    scheme: path segment
+    current: v1
+    evidence: >-
+      The portal's service map exposes /api/tcs/v1/... and /api/nqs/v1/... paths. The public
+      northbound base path is /northbound with no version segment observed anonymously.
+  portal:
+    scheme: single number
+    current: '0.9'
+    evidence: window._env_.APP_VERSION in the operator portal env-config
+  device_software:
+    scheme: SYS.<hw-arch>.<node-role>.<variant>.<major>.<minor>.<patch>.<build>
+    catalogued_versions: 146
+    evidence: window._SOFTWARE_VERSIONS_ in the operator portal common-config
+    note: >-
+      Each entry is flagged bnCompatible / rnCompatible, so the compatibility matrix between
+      base-node and remote-node images is published, machine-readable and anonymous. Examples:
+      SYS.A4.B10.XXX.4.931.019.02 (G2 base node), SYS.A3.R10.XXX.3.013.000.00 (remote node).
+deprecation_policy:
+  published: false
+  sunset_header: unknown
+  deprecation_header: unknown
+  rfc8594: unknown
+  note: >-
+    No deprecation or sunset policy for the northbound API is reachable anonymously, and no
+    Deprecation/Sunset header could be observed because every API path is RBAC-gated. Recorded
+    as absent, not as compliant. What Tarana DOES publish is a device-software compatibility
+    matrix and an auto-upgrade schedule with start/end times, which is the hardware-lifecycle
+    analogue but not an API deprecation policy.
+support:
+  portal: https://support.taranawireless.com/s/
+  knowledge_base: https://support.taranawireless.com/s/topic/0TO8X00000114nQWAQ/tarana-cloud-suite
+  security_contact: tcs-security@taranawireless.com
+  note: >-
+    The support portal is Salesforce Experience Cloud. Article bodies are rendered client-side
+    by Lightning and the guest knowledge REST API returns 401, so no article content is
+    machine-readable to an anonymous client.
+sla:
+  published: false
+  note: >-
+    No public SLA document. TCS does expose an operator-configurable SLA feature in the portal
+    (up to 200 custom SLA definitions per tenant, per MAX_ALLOWED_SLAS), which is a
+    self-service SLA-tracking tool rather than a Tarana commitment.
+data_retention:
+  event_log_days: 399
+  metrics_l0_days: 30
+  metrics_l1_days: 90
+  metrics_l2_days: 395
+  source: https://portal.tcs.taranawireless.com/operator-portal/env-config.js
+deprecated_operations: []
+deprecated_operations_note: >-
+  Not derivable — no OpenAPI is publicly retrievable.

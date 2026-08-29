@@ -1,23 +1,148 @@
 aid: tarana-wireless
 name: Tarana Wireless
-description: 'Tarana Wireless is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Tarana Wireless is a Milpitas, California broadband equipment company and the creator of
+  next-generation fixed wireless access (ngFWA), a physical-layer approach that uses
+  distributed multi-user MIMO and interference cancellation to deliver fiber-class
+  performance over 3 GHz CBRS, 5 GHz and 6 GHz spectrum in non-line-of-sight conditions.
+  Its G1 platform pairs base nodes and remote nodes with the Tarana Cloud Suite (TCS), a
+  multi-tenant SaaS that operators use to plan, install, provision, monitor and troubleshoot
+  their radio networks. TCS is the company's software and API surface: it exposes a REST
+  northbound API for device inventory, network topology and geo-mapping, subscriber
+  provisioning and billing integration into operator OSS/BSS systems, a configurable webhook
+  and alert notification channel, CBRS SAS and 6 GHz AFC domain-proxy integrations, and
+  dial-out streaming telemetry from the radios. The northbound API reference is published as
+  a Swagger UI inside the operator portal and requires an authenticated TCS tenant, so the
+  machine-readable contract is not publicly retrievable.
+image: https://taranawireless.com/wp-content/uploads/2022/03/Tarana-Logo-Horizontal-no-Tagline-White.svg
 url: https://raw.githubusercontent.com/api-evangelist/tarana-wireless/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment
 specificationVersion: '0.20'
 created: '2026-08-29'
 modified: '2026-08-29'
 tags:
 - Company
-apis: []
+- Networking
+- Telecommunications
+- Fixed Wireless Access
+- Broadband
+- Wireless
+- Network Management
+- Internet Service Providers
+- CBRS
+- Spectrum
+- Telemetry
+- Hardware
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- name: Tarana Cloud Suite (TCS) Northbound API
+  description: >-
+    The TCS northbound REST API is how operators wire the Tarana Cloud Suite into their own
+    OSS/BSS: device inventory, network topology discovery and geo-mapping, subscriber
+    provisioning, billing integration, alarm and event retrieval, and zero-touch deployment
+    configuration. Tarana's own operator-portal runtime configuration publishes the API
+    reference location as a Swagger UI at
+    https://portal.tcs.taranawireless.com/northbound/swagger-ui.html; that path and every
+    Swagger/OpenAPI sibling under it return HTTP 403 "RBAC: access denied" to anonymous
+    callers, so the OpenAPI document exists but is reachable only inside an authenticated
+    TCS tenant.
+  humanURL: https://portal.tcs.taranawireless.com/northbound/swagger-ui.html
+  baseURL: https://portal.tcs.taranawireless.com/northbound
+  tags:
+  - Network Management
+  - Device Inventory
+  - Provisioning
+  - Telemetry
+  - Alarms
+  properties:
+  - type: APIReference
+    url: https://portal.tcs.taranawireless.com/northbound/swagger-ui.html
+  - type: Webhooks
+    url: asyncapi/tarana-wireless-webhooks.yml
+  - type: AsyncAPI
+    url: asyncapi/tarana-wireless-alerts-asyncapi.yml
+  - type: Authentication
+    url: authentication/tarana-wireless-authentication.yml
+  - type: Conventions
+    url: conventions/tarana-wireless-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tarana-wireless-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/tarana-wireless-rate-limits.yml
 common:
+- type: DomainSecurity
+  url: security/tarana-wireless-domain-security.yml
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://www.taranawireless.com/
+- type: DeveloperPortal
+  url: https://portal.tcs.taranawireless.com/
+- type: Documentation
+  url: https://support.taranawireless.com/s/topic/0TO8X00000114nQWAQ/tarana-cloud-suite
+- type: APIReference
+  url: https://portal.tcs.taranawireless.com/northbound/swagger-ui.html
+- type: Support
+  url: https://support.taranawireless.com/s/
+- type: Login
+  url: https://portal.tcs.taranawireless.com/
+- type: Blog
+  url: https://www.taranawireless.com/blog/
+- type: BlogRSS
+  url: https://www.taranawireless.com/feed/
+- type: News
+  url: https://www.taranawireless.com/news/
+- type: FAQ
+  url: https://www.taranawireless.com/faqs/
+- type: Training
+  url: https://www.taranawireless.com/training/
+- type: ContactUs
+  url: https://www.taranawireless.com/contact-us/
+- type: GitHubOrganization
+  url: https://github.com/TaranaWireless
+- type: TermsOfService
+  url: https://www.taranawireless.com/legal/#tcs-terms-of-use
+- type: PrivacyPolicy
+  url: https://www.taranawireless.com/legal/#privacy-policy
+- type: StatusPage
+  url: https://status.taranawireless.com/
+- type: Lifecycle
+  url: lifecycle/tarana-wireless-lifecycle.yml
+- type: ChangeLog
+  url: changelog/tarana-wireless-changelog.yml
+- type: WellKnown
+  url: well-known/tarana-wireless-well-known.yml
+- type: SecurityTxt
+  url: well-known/tarana-wireless-security.txt
+- type: Security
+  url: security/tarana-wireless-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/tarana-wireless-vulnerability-disclosure.yml
+- type: Authentication
+  url: authentication/tarana-wireless-authentication.yml
+- type: Conventions
+  url: conventions/tarana-wireless-conventions.yml
+- type: ErrorCatalog
+  url: errors/tarana-wireless-error-codes.yml
+- type: Conformance
+  url: conformance/tarana-wireless-conformance.yml
+- type: Webhooks
+  url: asyncapi/tarana-wireless-webhooks.yml
+- type: AsyncAPI
+  url: asyncapi/tarana-wireless-alerts-asyncapi.yml
+- type: RateLimits
+  url: rate-limits/tarana-wireless-rate-limits.yml
+- type: Plans
+  url: plans/tarana-wireless-plans-pricing.yml
+- type: LLMsTxt
+  url: llms/tarana-wireless-llms.txt
+x-enrichment:
+  date: '2026-08-29'
+  status: enriched
+  artifacts_added: 19
+  pass: local-v1

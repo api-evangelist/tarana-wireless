@@ -1,0 +1,186 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  Direct anonymous HTTPS probes of /.well-known/* on every Tarana Wireless host discovered
+  during contract discovery (marketing WordPress site, Salesforce Experience Cloud support
+  portal, Tarana Cloud Suite operator portal, TCS API gateway, TCS identity provider,
+  resources site and resources API).
+name: Tarana Wireless — /.well-known/ probe
+note: >-
+  Two real documents are served. The TCS operator portal publishes an RFC 9116 security.txt
+  naming a dedicated product-security mailbox (tcs-security@taranawireless.com). The
+  Salesforce Experience Cloud support portal serves a complete OpenID Provider
+  configuration for its own org. Everything else 404s, is RBAC-denied, or answers from an
+  SPA/login catch-all. Note the two 200-that-is-not-a-document cases recorded below:
+  resources.taranawireless.com is a Vue SPA that returns its 1,620-byte index.html with
+  HTTP 200 for every path, and tcs.taranawireless.com returns the operator-portal HTML
+  shell for /.well-known/security.txt while returning "RBAC: access denied" for every other
+  path — neither is a served well-known document.
+hosts:
+- host: portal.tcs.taranawireless.com
+  role: Tarana Cloud Suite operator portal (and northbound API host)
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain
+    file: tarana-wireless-security.txt
+    document: true
+    note: >-
+      RFC 9116 security.txt. Carries Contact, Hiring and Preferred-Languages. No Expires,
+      Policy, Encryption, Acknowledgments or Canonical field.
+  - path: /.well-known/api-catalog
+    status: 403
+    document: false
+    note: 'Istio ingress returns "RBAC: access denied" to anonymous callers.'
+  - path: /.well-known/openid-configuration
+    status: 403
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 403
+    document: false
+  - path: /.well-known/agent.json
+    status: 403
+    document: false
+- host: support.taranawireless.com
+  role: Salesforce Experience Cloud customer support and knowledge portal
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: tarana-wireless-support-openid-configuration.json
+    document: true
+    note: >-
+      Salesforce-issued OpenID Provider Metadata (RFC 8414 / OpenID Connect Discovery 1.0)
+      for the support portal org. issuer https://support.taranawireless.com, authorization,
+      token, revocation, introspection, userinfo, registration and JWKS endpoints all
+      present. This governs support-portal sign-in, not the TCS northbound API.
+  - path: /.well-known/security.txt
+    status: 401
+    document: false
+  - path: /.well-known/api-catalog
+    status: 401
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 401
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 401
+    document: false
+  - path: /.well-known/agent.json
+    status: 401
+    document: false
+- host: idp.tcs.taranawireless.com
+  role: Tarana Cloud Suite hosted OAuth 2.0 authorization server
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+    note: >-
+      Answers with the JSON body {"error":"This URL doesn't exist on the authorization
+      server."} — the host is an authorization server but publishes no discovery document
+      at this path.
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/jwks.json
+    status: 404
+    document: false
+- host: api.tcs.taranawireless.com
+  role: TCS AWS API Gateway edge
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    document: false
+    note: >-
+      Every path returns the gateway envelope
+      {"data":null,"error":{"code":403,"message":"The HTTP method or resources may not be
+      supported.","status":"Unsupported API"}} with x-amzn-errortype
+      MissingAuthenticationTokenException.
+  - path: /.well-known/agent-card.json
+    status: 403
+    document: false
+  - path: /.well-known/agent.json
+    status: 403
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 403
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+    document: false
+- host: tcs.taranawireless.com
+  role: TCS entry hostname (301 redirects to portal.tcs.taranawireless.com)
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    document: false
+    note: >-
+      FALSE POSITIVE — 200 returns the 3,853-byte operator-portal HTML shell, not a
+      security.txt. Every other /.well-known/ path on this host returns 403 "RBAC: access
+      denied". Not counted as a served document.
+  - path: /.well-known/api-catalog
+    status: 403
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 403
+    document: false
+  - path: /.well-known/agent.json
+    status: 403
+    document: false
+- host: resources.taranawireless.com
+  role: Vue single-page marketing resource library
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    document: false
+    note: >-
+      FALSE POSITIVE — SPA catch-all. Returns the identical 1,620-byte index.html for every
+      path including /openapi.json, /llms.txt and /.well-known/agent-card.json. No document
+      served.
+  - path: /.well-known/api-catalog
+    status: 200
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 200
+    document: false
+  - path: /.well-known/agent.json
+    status: 200
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 200
+    document: false
+- host: resourcesapi.taranawireless.com
+  role: Laravel resource-file API backing the resources library (redirects / to /login)
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+summary:
+  hosts_probed: 7
+  documents_served: 2
+  security_txt: true
+  openid_configuration: true
+  api_catalog: false
+  agent_card: false
+  ai_plugin: false

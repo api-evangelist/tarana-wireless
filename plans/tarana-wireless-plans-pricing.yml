@@ -1,0 +1,31 @@
+generated: '2026-08-29'
+method: searched
+source: https://www.taranawireless.com/how-to-buy/
+name: Tarana Wireless — plans and pricing
+plan_count: 0
+plans: []
+note: >-
+  Tarana publishes NO pricing of any kind — not for the G1 hardware, not for the Tarana Cloud
+  Suite subscription, and not for northbound API access. This is an honest zero, not a gap in
+  the search. The company sells through a distributor and channel motion: /how-to-buy/ routes
+  a buyer to authorized distributors and a "request a call" form, and /promos-and-financing/
+  advertises financing programs without naming a price. The northbound API is not sold
+  separately at all — it is a capability of a TCS tenant, which comes with the radios, so
+  there is no API plan, no quota, no overage and no metered tier to record.
+api_pricing_model: bundled with the Tarana Cloud Suite tenant; not separately priced or metered
+self_service_signup: false
+self_service_note: >-
+  There is no self-service developer signup. https://portal.tcs.taranawireless.com/ is a login
+  for existing operators; account creation is done by Tarana as part of onboarding (the
+  company publishes a "Creating a New Tarana Cloud Suite Account" guide rather than a signup
+  form).
+evidence:
+- url: https://www.taranawireless.com/how-to-buy/
+  status: 200
+  note: Distributor and contact routing; no prices.
+- url: https://www.taranawireless.com/promos-and-financing/
+  status: 200
+  note: Financing and promotion programs; no prices.
+- url: https://portal.tcs.taranawireless.com/
+  status: 200
+  note: Operator portal login. No signup, no plan selection.

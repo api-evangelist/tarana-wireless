@@ -1,0 +1,2150 @@
+generated: '2026-08-29'
+method: searched
+source: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+name: Tarana Cloud Suite — alarm, event and API error catalog
+note: 'Tarana publishes its complete TCS alarm and event vocabulary as an anonymous, unauthenticated JavaScript
+  configuration file that the operator portal loads at page load. Everything below is copied verbatim
+  from that file; nothing is inferred. This is the non-payments sibling of a decline-code reference: it
+  is the registry an operator integration has to switch on. It is NOT an HTTP problem-type catalog — the
+  TCS northbound OpenAPI is RBAC-gated, so no RFC 9457 problem types could be derived. The one HTTP-level
+  error shape recorded here was observed live on the public TCS API gateway.'
+formats:
+  rfc9457: false
+  note: The TCS API gateway returns a proprietary JSON envelope, not application/problem+json.
+http_error_envelope:
+  method: probed
+  observed_at: https://api.tcs.taranawireless.com/
+  observed: '2026-08-29'
+  http_status: 403
+  content_type: application/json
+  shape:
+    data: null on error
+    error:
+      code: integer, mirrors the HTTP status
+      message: human-readable string
+      status: short machine label
+  example:
+    data: null
+    error:
+      code: 403
+      message: The HTTP method or resources may not be supported.
+      status: Unsupported API
+  note: 'Served by AWS API Gateway (x-amzn-errortype: MissingAuthenticationTokenException). access-control-allow-origin
+    is pinned to https://portal.tcs.taranawireless.com.'
+device_alarms:
+  count: 160
+  raw_definition_rows: 709
+  note: The source file carries one row per alarm/YANG-resource pair; the 709 rows collapse to 160 unique
+    alarm codes. severity[] and event_type[] list every value a code is defined with.
+  severity_scale:
+  - CRITICAL
+  - MAJOR
+  - MINOR
+  - WARNING
+  severity_distribution:
+    MAJOR: 359
+    CRITICAL: 176
+    WARNING: 125
+    MINOR: 49
+  event_types:
+    PROCESSING_ERR: 6
+    EQUIPMENT: 81
+    COMMUNICATION: 78
+    OPERATIONAL_VIOLATION: 532
+    ENVIRONMENTAL: 11
+    OTHER: 1
+  event_type_note: COMMUNICATION / ENVIRONMENTAL / EQUIPMENT / PROCESSING_ERR / OPERATIONAL_VIOLATION
+    / OTHER are the ITU-T X.733 alarm eventType values; see conformance/tarana-wireless-conformance.yml.
+  visibility_note: 'access: viewer alarms surface to any operator user; access: engineer alarms are shown
+    to engineering roles.'
+  codes:
+  - code: approximate-time-sync
+    title: Approx Time Sync
+    description: Clock on the device was set to the time when it last connected to TCS. This is because
+      the BN was unable to reach NTP servers or GPS was unable to get a lock. In case of RN this could
+      be because the link to BN has not been established.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: In most cases, the alarm is usually expected to clear on its own. If the alarm stays
+      raised for a particular BN for a long time, it maybe be because the GPS module does not have clear
+      view of the sky. In rare cases where GPS related alarms are also seen, the GPS module might have
+      developed a fault for which a truck roll and RMA is needed.
+  - code: artifact-config-failure
+    title: Artifact Config Failure
+    description: Artifact download, package processing, or apply failed for the staged configuration.
+    severity:
+    - MAJOR
+    event_type:
+    - PROCESSING_ERR
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Confirm the artifact URL, authentication, and version. Check platform_manager logs.
+  - code: aurora-framing-error
+    title: Aurora Framing Error
+    description: Transient glitch encountered inside BN's modem.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: Can be usually ignored. Contact Tarana Support only if the alarm persists across multiple
+      days.
+  - code: authentication-failure
+    title: Failed Login Attempts
+    description: Consecutive failed login attempts detected for admin user.
+    severity:
+    - WARNING
+    event_type:
+    - PROCESSING_ERR
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Investigate the source of failed login attempts. Check if legitimate user is having issues
+      or if this is a potential security threat. Review system logs for details.
+  - code: bad-antenna-health
+    title: Bad Antenna Health
+    description: The number of affected antennas has exceeded the allowed limit.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: boot-bank-switchover
+    title: Boot Bank Switchover
+    description: The system did not boot from the desired software bank. If a new software version was
+      recently installed, it may have issues or may not be compatible with the hardware.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: The device attempted to load the software from the desired bank multiple times but failed
+      and so it has switched to an alternate bank. Try upgrading the software to a different version.
+      If the problem persists, contact Tarana Support.
+  - code: boot-failure
+    title: Boot Failure
+    description: There is a boot failure detected. The failure was encountered in the initialization script.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 2
+    remediation: Power cycle the device (in some cases the device will reboot on its own to try and recover
+      from the error). If the problem persists, contact Tarana support.
+  - code: bootloader-failure
+    title: Bootloader Failure
+    description: The system did not load the desired bootloader. If a new software version was recently
+      loaded, it may have issues with the hardware.
+    severity:
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Reinstall the currently-running software version, or upgrade the software. Contact Tarana
+      support if the problem persists.
+  - code: bootup-config-failure
+    title: Bootup Config Failure
+    description: There was a failure in restoring configuration from the device’s persistent store. Indicates
+      either a partial configuration failure because of incompatible or deprecated saved configuration,
+      or the saved configuration file may be corrupted. Some configurations have been switched to their
+      default values. The device may not function as expected.
+    severity:
+    - MINOR
+    event_type:
+    - PROCESSING_ERR
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Can be usually ignored since the device will receive fresh configuration from TCS once
+      it is connected to it. Contact Tarana Support if the issue persists.
+  - code: bus-probe-failure
+    title: Bus Probe Failure
+    description: Transient glitch encountered on one of the system buses.
+    severity:
+    - CRITICAL
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 5
+    remediation: Perform a reboot of the device. If issue is still present, power cycle the device. Contact
+      Tarana support if problem persists.
+  - code: cal-antenna-delta-railed
+    title: Cal Antenna Delta Railed
+    description: An antenna in the Tx direction has a delta at the maximum value. This condition can significantly
+      degrade beamforming.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+  - code: cal-antenna-disable
+    title: Cal Antenna Disable
+    description: Cal has disabled one or more additional antennas for a particular carrier over and above
+      the ones disabled intentionally by a Tarana Engineer via the parameter system.enabled_antenna_mask.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 8
+  - code: cal-metric-failure
+    title: Cal Metric Failure
+    description: One of the calibration metrics has failed to meet the threshold on one or more antennas
+      for a particular carrier.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 68
+  - code: cal-rx-lo-out-of-bound
+    title: Cal Rx LO out of bound
+    description: An antenna in the Rx direction has out of bound LO.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana CAL team.
+  - code: cal-tx-lo-out-of-bound
+    title: Cal Tx LO out of bound
+    description: An antenna in the Tx direction has out of bound LO.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana CAL team.
+  - code: carrier-down
+    title: Carrier Down
+    description: Carrier 0 is down. The device is not transmitting on that frequency.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 4
+    remediation: For 3 GHz & 6 GHz radios, check spectrum availability from SAS/AFC. For 5 GHz radios
+      in ETSI region, check the presence of radars. Contact Tarana support if no resolution.
+  - code: certificate-copy-error
+    title: Certificate Copy Error
+    description: Certificate copy to persistent storage failed.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 0
+    remediation: Contact Tarana Support.
+  - code: certificate-expiry
+    title: Certificate Expiry
+    description: The device's certificate has expired or is about to expire.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: certificate-expiry-soon
+    title: Certificate Expiry (Deprecated)
+    description: Certificate is about to expire or already expired.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: certificate-load-failure
+    title: Certificate Load Failure
+    description: The certificate load failed due to a key mismatch or a key not present.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: certificate-root-invalid
+    title: Invalid Root Certificate
+    description: Root certificate common name (CN) is incorrect or invalid.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 5
+    remediation: Contact Tarana Support.
+  - code: connection-down
+    title: Connection Down
+    description: RN has not been able to reach the intended BN.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 0
+    remediation: Alarm is informational only. Check configuration (Operator ID, preferred frequencies,
+      BN mute/transmit) if the alarm persists. RN or BN may have become misaligned.
+  - code: consecutive-ucrch-failures
+    title: Consecutive UCRCH failures
+    description: Uplink connection request failed at high SINR
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: If the issue persists, reboot BN or contact Tarana Support.
+  - code: corrupt-software
+    title: Corrupt Software
+    description: Software image is corrupted.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform an upgrade to the same or a different software version.
+  - code: cpu-access-fault
+    title: CPU Access Fault
+    description: A DSP access fault has occurred.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Reboot the device. If the issue persists, contact Tarana Support.
+  - code: cpu-heartbeat-timeout
+    title: CPU Heartbeat Timeout
+    description: One or more DSPs have not responded to a ping request within 2 minutes.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: If the issue persists, reboot BN or contact Tarana Support.
+  - code: cpu-usage-high
+    title: CPU Usage High
+    description: CPU usage percentage is high.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Contact Tarana Support.
+  - code: ddr-ecc-corrected-errors
+    title: DDR RAM Corrected Errors
+    description: Detected and corrected 1-bit DDR3 ECC error.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: Alarm is informational only since the system has already compensated for the error. Contact
+      Tarana support if the alarm is seen frequently.
+  - code: ddr-ecc-uncorrected-errors
+    title: DDR RAM Uncorrected Errors
+    description: Detected uncorrected multi-bit DDR3 ECC error.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      RMA the device if the alarm is seen frequently.
+  - code: ddr3-ecc-corrected-errors
+    title: DDR3 RAM Corrected Errors
+    description: Detected and corrected 1-bit DDR3 ECC error.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only since the system has already compensated for the error. Contact
+      Tarana support if the alarm is seen frequently.
+  - code: ddr3-ecc-uncorrected-errors
+    title: DDR3 RAM Uncorrected Errors
+    description: Detected uncorrected multi-bit DDR3 ECC error.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      RMA the device if the alarm is seen frequently.
+  - code: devel-toml-not-empty
+    title: Devel TOML not empty
+    description: /extra/etc/devel.toml is not empty
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only. Confirm that the custom configuration present in devel.toml
+      is intentional.
+  - code: device-failure
+    title: Hardware Failure
+    description: Hardware device failures, Fans have failed.
+    severity:
+    - CRITICAL
+    - MAJOR
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 33
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      RMA the device if the problem persists.
+  - code: dhcp-server-unavailable
+    title: DHCPv4 Address Unavailable
+    description: The DHCPv4 server is unreachable via the BN's In-band Management port. No IP was received.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 3
+    remediation: Ensure the DHCPv4 server is reachable via the BN's DATA port, or use a static in-band
+      management IP address.
+  - code: dhcpv6-server-unavailable
+    title: DHCPv6 Address Unavailable
+    description: The DHCPv6 server is unreachable via the BN's In-band Management port. No IPv6 address
+      was received.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Ensure the DHCPv6 server is reachable via the BN's DATA port, or use a static in-band
+      management IPv6 address.
+  - code: diagnostic-in-progress
+    title: EDP Health Check in Progress
+    description: Running EDP field diagnostics, service might be impacted while running diagnostics
+    severity:
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: dialout-failure
+    title: Dialout Failure
+    description: There was an error in dial-out registration for dynamic subscriptions with Tarana Cloud
+      Suite.
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 10
+    remediation: This alarm typically clears automatically. If the alarm does not clear, there may be
+      a network issue between the BN and Internet.
+  - code: dialout-stuck
+    title: Dialout Stuck
+    description: Dialout stuck while trying to stream updates to Tarana Cloud Suite.
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 10
+    remediation: This alarm typically clears automatically. If the alarm does not clear, there may be
+      a network issue between the BN and Internet.
+  - code: dialout-unreachable
+    title: Dialout Not Reachable
+    description: Failed to connect with streaming telemetry dialout endpoint.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 3
+    remediation: Confirm the URL for the telemetry streaming server is correct and that the server is
+      reachable from BN.
+  - code: disk-ecc-badblocks
+    title: Disk ECC Bad Blocks
+    description: The value associated with this alarm is the count of number of bad blocks in NAND/eMMC
+      Flash
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-ecc-corrected-bits
+    title: Disk ECC Corrected Bits
+    description: The value associated with this alarm is the count of corrected bits in NAND/eMMC Flash
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-ecc-uncorrected-errors
+    title: Disk ECC Uncorrected Errors
+    description: The value associated with this alarm is the count of uncorrectable errors in NAND/eMMC
+      Flash
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-emmc-mlc-lifetime
+    title: Disk EMMC MLC Lifetime
+    description: The value associated with this alarm is the Completed life time estimation B (MLC blocks)
+      in %
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-emmc-pre-eol
+    title: Disk EMMC Pre EOL
+    description: 'The value associated with this alarm is the Reserved blocks consumed estimation. Value
+      is one of (1, 2 or 3) where 1:normal, 2: 80%, 3: 90%'
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-emmc-slc-lifetime
+    title: Disk EMMC SLC Lifetime
+    description: The value associated with this alarm is the Completed life time estimation A (SLC blocks)
+      in %
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-error
+    title: Flash Storage Error
+    description: The device failed to perform operation on disk.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Contact Tarana Support.
+  - code: disk-inodes-low
+    title: Disk Space Low (inodes)
+    description: The amount of disk space available for usage is low. The device is at risk of not being
+      able to function properly. The value associated with this alarm has it's units in percentage.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 8
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: disk-space-low
+    title: Disk Space Low
+    description: The amount of disk space available for usage is low. The device is at risk of not being
+      able to function properly. The value associated with this alarm has it's units in percentage.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 8
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dl-heartbeat-missed
+    title: Downlink Heartbeat Missed
+    description: One or more heartbeats sent from the BN were not received at the RN. The heartbeats sent
+      from RN to BN are still going through. If many of these are missed, BN will disconnect the RN.
+    severity:
+    - MAJOR
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only and should clear automatically. If the link gets disconnected
+      because of missed downlink heartbeats, it will come back up again. If the alarm is raised repeatedly
+      and link goes down frequently, adjustment may be required either to the RN's configuration or its
+      physical mount.
+  - code: dl-raster-latency-limit-reached
+    title: DL Raster Hard Latency Limit Reached
+    description: RNs with bytes in downlink queue that have been in the modem for at least mac.scheduler.raster.hard_latency_limit_frames.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only and should clear automatically.
+  - code: dl-traffic-blocked
+    title: Downlink Traffic Blocked
+    description: Packets have accumulated in the switch and modem buffers for this link because the downlink
+      traffic has halted.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+  - code: dlcce-processor
+    title: DLCCE Signalling
+    description: Locked Subbands Modified
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: No action required. System will recover by disconnecting the link and RN will re-enter
+      the network.
+  - code: dma-engine-failure
+    title: DMA Engine Failure
+    description: DMA engine stop or restart has failed, FPGA is not responsive.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dma-incomplete
+    title: DMA Incomplete
+    description: DMA did not complete.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dma-lost-sync
+    title: DMA Lost Sync
+    description: DMA Lost sync of frame.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dma-pps-error
+    title: DMA PPS Error
+    description: The device has experienced a DMA PPS Error. There is a likelihood the device may not
+      be able to transmit.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 14
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dma-pps-start-time-error
+    title: 'DMA PPS Error: Start Time'
+    description: Linux time mismatches with Modem.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dma-stall
+    title: DMA Stall Error
+    description: DMA engine has stalled. Probably due to timing issues
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: dns-resolution-failure
+    title: DNS Resolution Failure
+    description: Hostname resolution failure (Dialout).
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Check spelling in FQDN. Also, make sure DNS server is reachable.
+  - code: dns-server-failure
+    title: DNS Server Failure
+    description: The BN is reporting that the DNS servers failed. This will prevent the BN from being
+      able to access TCS. User traffic will not be affected.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Check that the DNS server is correctly configured in the BN's web UI (Setup section)
+      and reachable from the BN.
+  - code: emergency-reboot
+    title: Emergency Reboot
+    description: The device has encountered an unrecoverable device failure (Crossed critical temperature).
+      This is an after-the-fact notification.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 2
+    remediation: Make sure the unit is installed as per recommended guidelines and the ambient temperature
+      is within the operating range.
+  - code: empty-dialout-url
+    title: Default Dialout URL Empty
+    description: URL for registering default dialouts is empty.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Confirm the URL for the central service is correct.
+  - code: firmware-mismatch
+    title: Firmware Mismatch
+    description: Firmware version mismatch.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Upgrade the software to a newer version. If no upgrades are available, contact Tarana
+      support.
+  - code: gps-interference
+    title: GPS Interference
+    description: GPS interference level is critical. Continuous wave and broadband interference is affecting
+      GPS signal reception.
+    severity:
+    - MAJOR
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Check for nearby sources of GPS interference. Ensure the GPS antenna has clear view of
+      the sky and is away from potential interference sources.
+  - code: gps-jammer-detected
+    title: GPS Jammer Detected
+    description: GPS jamming interference detected. JIND (Jamming Indicator) exceeds its threshold while
+      average SNR is below the SNR threshold, indicating potential GPS signal interference.
+    severity:
+    - MAJOR
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Check for nearby sources of GPS interference. Ensure the GPS antenna has clear view of
+      the sky and is away from potential interference sources.
+  - code: gps-satellites-low
+    title: GPS Satellites Low
+    description: The number of GPS satellites available for syncing is low. If the BN is not locked to
+      at least three satellites, it will mute itself after 30 minutes.
+    severity:
+    - MINOR
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Ensure that the BN is installed outside with a clear view of the sky for the GPS antenna.
+  - code: gps-uart-error
+    title: GPS UART error
+    description: GPS receiver UART error.
+    severity:
+    - MINOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: gps-unlocked
+    title: GPS Lock Lost
+    description: The GPS module in the device has lost track of the satellite signals. If the GPS module
+      is unable to re-acquire the satellite signals within hold-over time (30 minutes), the BN will mute
+      itself.
+    severity:
+    - CRITICAL
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Ensure that the radio is installed outside with clear view for the GPS antenna.
+  - code: gpsd-unresponsive
+    title: GPS Daemon Unresponsive
+    description: Not receiving any updates from GPS Daemon.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: hardware-clock-skew
+    title: Clock skew
+    description: VCTCXO correction is applied
+    severity:
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Alarm is informational only.
+  - code: high-memory
+    title: RSS Memory Threshold Breach
+    description: Module is using more RSS memory than configured limit.
+    severity:
+    - MAJOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 16
+  - code: interface-down
+    title: Interface Down
+    description: This will halt the passing of data through this interface.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 9
+    remediation: Check physical connections of cabling connected to the port.
+  - code: internal-management-traffic-blocked
+    title: Internal Management Traffic Blocked
+    description: Management traffic has been blocked between RN and BN.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: invalid-configuration
+    title: Invalid Configuration
+    description: Configuration is not valid, wrong node mode.
+    severity:
+    - CRITICAL
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: invalid-dhcp-ip-offered
+    title: Invalid DHCP IPv4 Address
+    description: An invalid DHCP IP was offered for in-band management.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Check DHCP server settings on the network.
+  - code: invalid-parameter
+    title: Invalid Parameter
+    description: Parameter validation failed.
+    severity:
+    - MAJOR
+    event_type:
+    - PROCESSING_ERR
+    visibility:
+    - engineer
+    resource_instances: 0
+    remediation: Contact Tarana Support.
+  - code: ip-conflict
+    title: IP Address Conflict
+    description: An IP address conflict was detected on the in-band management port.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: Confirm no IPs are duplicated within utilized subnet.
+  - code: jesd-lost-sync
+    title: JESD Lost Sync
+    description: JESD sync was lost between Modem and the high speed ADC/DAC. Link(s) may be dropped.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 5
+    remediation: Reboot the device. If the issue persists, contact Tarana Support.
+  - code: jesd-phase-change
+    title: JESD Phase Change
+    description: Abnormal changes in phase on the JESD bus between Modem and the high speed ADC/DAC.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+    remediation: Can be usually ignored. Reboot the device. If the issue persists, contact Tarana Support.
+  - code: link-drain-failure
+    title: Modem Link Drain Failure
+    description: RN disconnected from the BN but the BN wasn't able to clear the pending packets from
+      its modem queue or switch queue.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: link-health-check-failure
+    title: Link unhealthy
+    description: DSP is reporting that the link healthy is suffering due to high sub-margins.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Alarm is for informational purposes only, no action needed. Alarm should clear on its
+      own.
+  - code: link-pool-depleted
+    title: Link Pool Depleted
+    description: Available modem link pool depleted due to multiple link drain failures.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: log-stream-failure
+    title: Log Streaming Failure
+    description: Log streaming to TCS failed.
+    severity:
+    - MAJOR
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: mac-link-disconnected
+    title: MAC Link Disconnected
+    description: MAC Layer triggered the disconnection of link.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 8
+    remediation: No action needed. RN will try to link up with the BN again.
+  - code: mac-rach-attempt-exceeded
+    title: RACH Attempt Exceeded
+    description: RN has exhausted the number of attempts to establish a link to the BN on this try.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: No action required. RN will search for and try to link up with the BN again.
+  - code: mac-table-threshold-exceeded
+    title: MAC Table Threshold Exceeded
+    description: The number of MAC entries has exceeded the configured limit.
+    severity:
+    - WARNING
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Ensure fewer devices are connected to the RN.
+  - code: mac-timing
+    title: MAC Deadline Miss
+    description: null
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: memory-low
+    title: Memory Low
+    description: Amount of CPU RAM available for applications is low. The value associated with this alarm
+      has it's units in percentage.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Reboot the device. If the problem persists, contact Tarana Support.
+  - code: missing-configuration
+    title: Missing Configuration
+    description: Mandatory configuration for certificates is not available.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: modem-ddr4-alarm
+    title: Modem DDR4 Error
+    description: Error in the DDR4 RAM attached to modem's FBL section.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 12
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: modem-decoder-alarm
+    title: Modem Decoder Error
+    description: Error in the decoder section of the modem.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 22
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: modem-encoder-alarm
+    title: Modem Encoder Error
+    description: null
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 15
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: modem-eth-fifo-alarm
+    title: Modem Ethernet FIFO Error
+    description: Unexpected error detected in Ethernet DDR Port FIFO.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 32
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: modem-load-failure
+    title: Modem Load Failure
+    description: Failed to load the FPGA bitstream.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 6
+    remediation: Alarm is informational only. Device will reboot in an attempt to overcome the error.
+  - code: modem-packet-alarm
+    title: Modem Packet Error
+    description: Error in the Packet Section of the Modem.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 76
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: modem-packet-drops
+    title: Modem Packet Drop
+    description: Modem packet drops exceed threshold in interval.
+    severity:
+    - MINOR
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only. No action is needed, system/link will recover on its own.
+  - code: module-crash
+    title: Module Crash
+    description: One or more software modules running on the CPU has crashed.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: No action needed, the device will reboot to recover from the error. Contact Tarana support
+      if the alarm is seed frequently.
+  - code: module-heartbeat-timeout
+    title: Module Heartbeat Timeout
+    description: System manager did not receive any heartbeat from a software module running on the CPU
+      for a certain period of time.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: No action needed, the device will reboot to recover from the error. Contact Tarana support
+      if the alarm is seed frequently.
+  - code: module-rx-queue-high
+    title: Module RX Queue High
+    description: Receive queue size exceeded.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 15
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: network-service-down
+    title: Network Service Down
+    description: null
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 0
+  - code: openvpn-mgmt-cli-unreachable
+    title: VPN CLI Failure
+    description: Unable to connect to OpenVPN management CLI.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Try rebooting the device.
+  - code: os-out-of-memory
+    title: OS Out of Memory
+    description: The CPU's RAM is under full utilization.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: No action needed, the device will reboot itself to recover from the error. Contact Tarana
+      Support if the alarm is seen frequently.
+  - code: os-runtime
+    title: OS Runtime Error
+    description: The system has encountered OS runtime errors.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: No action needed, the device will reboot itself to recover from the error. Contact Tarana
+      Support if the alarm is seen frequently.
+  - code: over-temperature
+    title: High Temperature
+    description: The temperature of the device is not within thresholds. The reported value is in degree
+      celsius.
+    severity:
+    - CRITICAL
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 7
+    remediation: Self-recovery will occur - the BN/RN will reboot. If issues persists, turn off the unit.
+      Make sure the unit is installed as per recommended guidelines and the ambient temperature is within
+      the operating range.
+  - code: ping-failure
+    title: Ping Failure
+    description: Unable to ping host.
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Check backhaul connectivity.
+  - code: primary-bn-mismatch-best-bn
+    title: Best BN not Primary
+    description: While searching for BNs, RN has found a BN with better signal metrics than the primary
+      BN.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Alarm is informational only.
+  - code: public-ip-assigned
+    title: Public IP Address Assigned
+    description: A public IPv4 has been assigned to the device. This increases the exposure of the device
+      to Internet hacking.
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 4
+    remediation: Implement private IP for unit unless intentional.
+  - code: quad-mode-insufficient-carriers
+    title: Insufficient Compatible Carriers in 4-Carrier Mode
+    description: 6 GHz RN has connected in 4-carrier mode to a G2 BN which has 2 of its carriers operating
+      in 3 GHz bands. Since this RN can only connect to the BN on those carriers that are operating in
+      5-6 GHz bands (which in this case are two or fewer in number), it is better for this RN to be operating
+      in 2-carrier mode to improve gain.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Clicking on 'Reconnect to Network' from the RN's single device page in TCS will remedy
+      this. RN will automatically choose to reconnect in the 2-carrier mode. The link will be disrupted
+      for a short while as it reconnects.
+  - code: quad-mode-metric-low
+    title: Low 4-Carrier Mode Search Metric
+    description: Consider adjusting the tilt and/or height on the RN. Changing the carrier frequencies
+      on the BN can also remedy this. If those don't work, be assured that RN has decided to be in 2-carrier
+      mode to optimize throughput for the sector.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Consider adjusting the tilt and/or height on the RN. Adding the current carrier frequencies
+      to the 'Exclude Frequencies' list on the sector page will force different carrier frequencies to
+      be assigned to the BN and may allow the RN to achieve a connection in 4-carrier mode on those carrier
+      frequencies.
+  - code: quad-to-dual-switchover
+    title: 2-Carrier Mode Fallback (from 4-Carrier Mode)
+    description: 'The device has switched to 2-carrier mode from 4-carrier mode due to one of the following
+      reasons: (1) link instability - greater than 5 consecutive disconnects within 10 minutes of each
+      other since last boot, (2) Low Search Metrics - Search Metrics for one or more (two or more if SYS
+      > 4.310) of BN carriers were found to be below 17.0, (3) Crowding of RNs on the connected BN - there
+      was no available control-channel (CCE) slot for 4-carrier RNs.'
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Check the path loss, interference, and consider adjusting the tilt and/or height on the
+      RN. Or assign a different primary BN. Or consider adding the current carrier frequencies to the
+      'Exclude Frequencies' list on the sector page will force different carrier frequencies to be assigned
+      to the BN and may allow the RN to achieve a connection in 4-carrier mode on those carrier frequencies.
+  - code: radio-ddr-init-failure
+    title: Modem RAM Init Failure
+    description: null
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: radio-down
+    title: Radio is Down
+    description: The radio is not transmitting.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Check configuration. Contact Tarana Support if the alarm doesn't clear on its own in
+      spite of correct configuration.
+  - code: radio-init-failure
+    title: Radio Initialization Failed
+    description: The device failed to initialize one or more components of its RF Chain (Modem > ADC-DACs
+      > RFICs)
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: The device will try to recover from the error by rebooting - link(s) will be down until
+      it recovers from this error. Contact Tarana Support if the issue persists.
+  - code: reference-unlocked
+    title: Reference Clock Unlocked
+    description: Reference clock is not locked. There may be hindrance in receiving the signals from GPS
+      satellites (the signals have not been received for over 30 minutes). Other BNs in the area may be
+      affected as well.
+    severity:
+    - CRITICAL
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: If the device is a BN, it will mute its radio after the hold-over time (this will drop
+      all connected RNs). For indoor lab operation, contact Tarana Support.
+  - code: rf-pda-missing
+    title: Factory Calibration Missing
+    description: Calibration data is missing from RF Board's memory chip.
+    severity:
+    - MINOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Contact Tarana Support.
+  - code: rfic-pll-unlocked
+    title: RFIC PLL Unlocked
+    description: One or more RFIC PLLs was detected as being unlocked for a particular carrier. Link will
+      be disconnected.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 6
+  - code: route-unavailable
+    title: Route Unavailable
+    description: The BN cannot reach the Management Default Gateway IPv4 address as configured on the
+      BN's web UI. This will prevent management traffic from accessing TCS. User traffic will not be affected.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Confirm the network topology between the BN and the Management Default Gateway.
+  - code: sector-full-rn-rejected
+    title: Sector Full - RN Rejected
+    description: BN has reached the maximum number of connections it can support
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Consider installing a new BN nearby to share the load of serving the RNs in this vicinity.
+      If an alternate BN already exists, ensure that it is powered up and active. Set the alternate BN
+      as the Primary BN for a few RNs to move them to that BN
+  - code: service-unavailable
+    title: Service Down
+    description: Syslog service is down. This could possibly be an issue with DNS/networking.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 4
+    remediation: Confirm network topology and ensure DNS server is reachable.
+  - code: sfp-invalid-data
+    title: Invalid SFP Data
+    description: Invalid data was received from the SFP module.
+    severity:
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Confirm compatibility of SFP module. Swap out the SFP module for a new one if necessary.
+      Contact Tarana Support if the problem persists.
+  - code: sfp-lost-signal
+    title: SFP Lost Signal
+    description: The received optical power in the SFP module in the DATA1 port is below the receiver's
+      sensitivity.
+    severity:
+    - MAJOR
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Check the fiber cable.
+  - code: sfp-rx-power-oor
+    title: SFP Rx Power Out Of Range
+    description: The received power is beyond the limits for SFP module in the DATA1 port.
+    severity:
+    - MINOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Check physical components and ratings of the fiber cable, SFP modules, and fiber switch
+      to which the BN is connected. Contact Tarana support if the issue persists.
+  - code: sfp-status-fetch-failed
+    title: SFP Status Fetch Failed
+    description: The device failed to fetch the status information from the SFP module in the DATA1 port.
+    severity:
+    - WARNING
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    resource_instances: 2
+    remediation: Perform a reboot of the device. If the issue is still present, power cycle the device.
+      If the issue is still present, contact Tarana Support.
+  - code: sfp-transmit-disabled
+    title: SFP Transmit Disabled
+    description: The SFP transmit is disabled on the DATA1 port.
+    severity:
+    - MAJOR
+    event_type:
+    - ENVIRONMENTAL
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Make sure the SFP module is rated for industrial temperature range and approved by Tarana.
+      Swap out SFP module for a new one if necessary. Contact Tarana support if problem persists.
+  - code: sfp-unplugged
+    title: SFP Unplugged
+    description: The SFP module is unplugged from the DATA1 port.
+    severity:
+    - MAJOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Check the physical connections on each end of the cable plugged into the DATA1 port of
+      the BN. Also, check cable fault status on BN's web UI.
+  - code: sfp-vendor-not-supported
+    title: SFP Module Untested
+    description: The SFP module inserted in the DATA1 port is untested by Tarana.
+    severity:
+    - MINOR
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 2
+    remediation: Replace SFP module with a supported module. Please see https://support.taranawireless.com/
+      for list of supported SFP modules.
+  - code: software-incompatible
+    title: Software Incompatible
+    description: RN software incompatible with Air Interface Protocol version used by the BN.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Upgrade RN software to version 1.2xx or higher.
+  - code: software-upgrade-failure
+    title: Software Upgrade Failure
+    description: The software upgrade failed. The device will switch back to the previous software version
+      in the other software bank.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Re-attempt the upgrade. Contact Tarana support if the problem persists.
+  - code: spectrum-heartbeat-failure
+    title: Spectrum Heartbeat Failed
+    description: Spectrum heartbeats failed.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: spi-master-busy
+    title: SPI Master Busy
+    description: Issue detected in performing clean transactions on the configuration bus between the
+      modem and high speed ADC-DAC.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 10
+    remediation: Contact Tarana Support.
+  - code: storage-failure
+    title: Flash Storage Failure
+    description: Mount partition failures.
+    severity:
+    - CRITICAL
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 5
+    remediation: Contact Tarana Support.
+  - code: storage-flash-corruption
+    title: NAND Flash corruption
+    description: NAND Flash Corruption.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 6
+    remediation: Contact Tarana Support.
+  - code: suboptimal-cross-carrier-assignment
+    title: Suboptimal Carrier Assignment
+    description: RN has connected in 2-carrier mode to a BN operating in a 4-carrier mode. RN has ended
+      up being able to only connect to only one of the 4 carriers and is unable to bring up its second
+      carrier.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Clicking on 'Reconnect to Network' from the RN's single device page in TCS will remedy
+      this. The link will be disrupted for a short while as it reconnects.
+  - code: suboptimal-dual-mode
+    title: Suboptimal 2-Carrier Mode
+    description: The 4-carrier mode is possible but currently connected in the 2-carrier mode. It is possible
+      that the BN was up with just 2 carriers when RN connected to it and later BN brought up all 4 carriers
+      making 4-carrier mode now possible.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Check the path loss and interference. Clicking on 'Reconnect to Network' from the RN's
+      single device page in TCS will remedy this. The link will be disrupted for a short while as it reconnects.
+  - code: suboptimal-quad-mode
+    title: Suboptimal 4-Carrier Mode
+    description: Quality of this connection in 4-carrier mode is sub-optimal.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Use TCS to configure the RN to connect to the BN in 2-carrier mode instead of letting
+      it auto select the mode.
+  - code: switch-buffer-utilization-critical
+    title: Critical Buffer Utilization
+    description: BN switch buffer utilization at critical level, needs reboot.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Device will try to reboot in an attempt to recover from the error.
+  - code: switch-buffer-utilization-high
+    title: High Buffer Utilization
+    description: BN switch buffer utilization exceeds threshold.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only.
+  - code: switch-init-failure
+    title: Switch initialization failure
+    description: BN switch initialization failure, needs reboot
+    severity:
+    - CRITICAL
+    event_type:
+    - PROCESSING_ERR
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: switch-queue-stats-mismatch
+    title: Switch Queue Stats Mismatch
+    description: Switch Queue Stats Mismatch
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 3
+  - code: switch-queue-stats-stale
+    title: Switch Queue Stats Stale
+    description: Switch queue stats stale
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 2
+  - code: switch-queue-stats-stall
+    title: Switch Queue Stats Stall
+    description: Switch queue stats read stall
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 7
+  - code: switch-reinit-in-progress
+    title: Switch reinitialization in progress
+    description: Switch reinitialization in progress
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: switch-rx-fifo-drops
+    title: RX FIFO drops
+    description: RX packets dropped on RN switch.
+    severity:
+    - MINOR
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 2
+  - code: switch-rx-mac-drops
+    title: RX MAC Drops
+    description: RX MAC module of BN modem port receives the frames but are getting dropped before being
+      processed by the switch. These drops occur at ingress.
+    severity:
+    - WARNING
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 2
+  - code: switch-rx-mac-drops-persistent
+    title: RX MAC Drops are persistent on Modem port
+    description: RX MAC module of BN modem port receives the frames but are getting dropped before being
+      processed by the switch. These drops occur at ingress.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only. Device will reboot in an attempt to overcome the error.
+  - code: switch-stats-sanity-failure
+    title: Switch Stats Sanity Failure
+    description: RX stats sanity failure detected on RN switch. Sum of unicast, multicast, broadcast packets
+      exceeds total RX packet count by significant margin.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: switch-vlan-err-detection
+    title: RN Switch VLAN Error Detection
+    description: RN detected a sustained ratio of VLAN header errors on RX GMII from the switch; a switch
+      hard reset was requested.
+    severity:
+    - MINOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+  - code: system-local-reboot
+    title: Reboot Initiated Locally
+    description: The reboot of the device was initiated locally.
+    severity:
+    - WARNING
+    event_type:
+    - OTHER
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: No action necessary.
+  - code: system-maintenance-mode
+    title: Maintenance Mode
+    description: Power to the fan assembly has been turned off. You may now replace the fan assembly.
+    severity:
+    - CRITICAL
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - viewer
+    resource_instances: 1
+    remediation: Re-enable power to fan assembly after replacement.
+  - code: system-manager-timeout
+    title: System Manager Timeout
+    description: Did not receive any response from system manager for a certain period of time.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: No action necessary. Device will reboot to recover from the error.
+  - code: tcs-unreachable
+    title: TCS Not Reachable
+    description: Lost dial-out connectivity to Tarana Cloud Suite.
+    severity:
+    - CRITICAL
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - viewer
+    resource_instances: 11
+    remediation: Check that the registration URL is correctly configured in the BN's web UI (Setup section)
+      and reachable from the BN (from the Diagnostics page on the BN's web UI).
+  - code: timing-violation
+    title: Timing Violation
+    description: Event timer maximum thresholds breached.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 0
+    remediation: Alarm is informational only. If this alarm is seen often, a ticket should be raised.
+  - code: tx-power-status
+    title: Tx Power Status
+    description: The transmit power capability is lower than the hardware limit.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 4
+    remediation: Contact Tarana Support.
+  - code: ul-heartbeat-missed
+    title: Uplink Heartbeat Missed
+    description: Uplink heartbeat(s) missed for more than 300 seconds.
+    severity:
+    - MAJOR
+    event_type:
+    - COMMUNICATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Check the link quality (interference) and pathloss if it is more than expected.
+  - code: ulcce-frame-mismatch
+    title: ULCCE Frame Mismatch
+    description: ULCCE payload frame number does not match the frame number in the DMA interrupt.
+    severity:
+    - MAJOR
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Alarm is informational only. System will auto-recover.
+  - code: unknown
+    title: Unknown
+    description: Unknown failure observed.
+    severity:
+    - WARNING
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Contact Tarana Support.
+  - code: unsaved-configuration
+    title: Configuration Not Saved
+    description: Configuration is not saved to the radio.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 1
+    remediation: Click 'Save Config' on BN/RN's web UI.
+  - code: version-mismatch
+    title: Version Mismatch
+    description: Component version mismatch. The BN may not be able to pass traffic.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    resource_instances: 9
+    remediation: Contact Tarana Support.
+  - code: voltage
+    title: Voltage Out of Range
+    description: Input voltage is not within thresholds, reported values are in volts. There is a risk
+      of the device rebooting.
+    severity:
+    - CRITICAL
+    event_type:
+    - EQUIPMENT
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 2
+    remediation: Verify appropriate voltage is reaching unit (consider power supply as well as cable gauge
+      and length).
+  - code: watchdog-reboot
+    title: Watchdog Reboot
+    description: Device was rebooted because the hardware watchdog timer was not petted in time.
+    severity:
+    - CRITICAL
+    event_type:
+    - OPERATIONAL_VIOLATION
+    visibility:
+    - engineer
+    - viewer
+    resource_instances: 2
+    remediation: Contact Tarana Support.
+derived_alarms:
+  count: 18
+  note: Correlated alarms TCS computes in the cloud rather than receiving from a radio. resource carries
+    a YANG-style instance path with %s placeholders.
+  codes:
+  - code: primary-bn-mismatch
+    title: Primary BN Mismatch
+    description: RN is not connected to primary BN.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Consider changing the Primary BN via the RN's device page.
+  - code: software-policy-mismatch
+    title: Software Policy Mismatch
+    description: The software version of the device is outside of the software versions defined in the
+      software upgrade policy in the Operator window of TCS.
+    severity: WARNING
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Reconfigure the upper and/or lower software-version limits of the software upgrade policy,
+      or manually upgrade the device.
+  - code: radio-transmit-off
+    title: Radio Transmit Off
+    description: Device is muted.
+    severity: CRITICAL
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Unmute the device if not intentional.
+  - code: cpi-id-missing
+    title: CPI ID Missing
+    description: No CPI ID available for CBRS device.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Configure the CPI ID.
+  - code: invalid-spectrum-provider-config
+    title: Invalid Spectrum Config
+    description: Configuration needed for Spectrum Acquisition is invalid
+    severity: CRITICAL
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Fill in or make corrections to the SAS Provider and FCC ID configured on the Operator
+      Page
+  - code: software-version-not-stable
+    title: Software Version Not Stable
+    description: Device is running beta/custom system software.
+    severity: WARNING
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+  - code: config-mismatch
+    title: Configuration Mismatch
+    description: Config mismatch between TCS and device.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: TCS will try to push the correct and updated configuration to the BN in order to keep
+      it in sync. If this alarm doesn't go away, please contact Tarana Support.
+  - code: device-unreachable
+    title: Device Unreachable
+    description: TCS is unable to reach device.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Check if the backhaul is up.
+  - code: rn-4carrier-mode-unsupported
+    title: RN Multicarrier Capability Mismatch
+    description: G1 BN-6 (or G2 BN-3+6) is operating in 4-carrier mode while RN-6 is operating in 2-carrier
+      mode. This is due to the RN being on software version 1.2 or lower.
+    severity: MINOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Upgrade RN to 2.0 release which supports 4-carrier mode.
+  - code: incompatible-aip-config
+    title: Incompatible AIP Version
+    description: Air Interface Protocol Version 0 configured for BN with one or more carriers on UNII-5/UNII-7
+      in sector config.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Change BN's Air Interface Protocol Version or Sector's carrier configuration to ensure
+      compatibility.
+  - code: incompatible-multicarrier-config
+    title: Incompatible Sector Multi-carrier Mode
+    description: Sector is configured for 4-carrier operation while attached BN is capable of operating
+      in 2-carrrier mode only.
+    severity: MINOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Change multi-carrier configuration at sector to match BN's capability.
+  - code: planning-id-unavailable
+    title: Planning ID Unavailable
+    description: All candidate Planning IDs for the cell are taken.
+    severity: CRITICAL
+    resource: /network/cells/cell[id=%s]
+    visibility: engineer
+    remediation: Contact Tarana Support to assist you for Planning ID.
+  - code: cell-planning-id-mismatch
+    title: Planning ID Mismatch
+    description: Configured Cell Planning ID does not match with the TCS recommended Planning ID.
+    severity: MAJOR
+    resource: /network/cells/cell[id=%s]
+    visibility: engineer
+    remediation: Change the Planning ID to TCS-derived value. Note that this lead to temporary disconnection
+      of all the links in this cell.
+  - code: sector-planning-id-mismatch
+    title: Planning ID Mismatch
+    description: Configured Sector Planning ID does not match with the TCS recommended Planning ID.
+    severity: MAJOR
+    resource: /network/sectors/sector[id=%s]
+    visibility: engineer
+    remediation: Change the Planning ID to recommended Planning ID. Note that this will lead to a temporary
+      disconnection of all the links in this cell.
+  - code: inter-bn-distance-exceed
+    title: Inter-BN Distance Exceeded
+    description: The distance between BNs of the same cell is more than 100 meters.
+    severity: MAJOR
+    resource: /network/cells/cell[id=%s]
+    visibility: engineer
+    remediation: Re-locate BNs to meet recommended distance between BNs. Recommended maximum distance
+      is 100 m.
+  - code: etsi-incompatible-software-booted
+    title: ETSI Incompatible Software Booted
+    description: Device booted with software lacking DFS support causing non-compliance with ETSI regulations.
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Upgrade software or switch boot bank to ensure device operating under ETSI domain boots
+      with a newer software. G1 BN-5 & RN-5 need to be on software version 3.0 or later. G1 BN-6, RN-6
+      & RNv-6 need to be on software version 4.2 or later.
+  - code: incompatible-dhcp-option82-config
+    title: Incompatible Sector configuration for DHCP Option82
+    description: Sector is configured for configuration (DHCP option 82) which BN software is not capable
+      of.
+    severity: MINOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: engineer
+    remediation: Upgrade BN software version to 3.0 and above.
+  - code: sector-rn-configuration-conflict
+    title: Sector RN Configuration Conflict
+    description: 1 or more RN's connected to the same BN have conflicting C-VLAN configuration
+    severity: MAJOR
+    resource: /network/radios/radio[device-id=%s]
+    visibility: viewer
+    remediation: Configure each RN to have a unique C_VLAN connecting to the same BN
+disconnect_reasons:
+  count: 293
+  source: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+  categories:
+  - bn-auto-recovery
+  - bn-power-loss
+  - bn-reboot-auto-recovery
+  - bn-reboot-user
+  - bn-reset-user
+  - control-channel
+  - link-reset-spectrum
+  - radio-reset-spectrum
+  - rn-auto-recovery
+  - rn-power-loss
+  - rn-reboot-auto-recovery
+  - rn-reboot-user
+  - rn-reset-user
+  - unknown
+  note: 'Delivered on the deviceDisconnectReason webhook field and on the device page. Entries flagged
+    internal: true are collapsed to an operator-facing label.'
+reboot_reasons:
+  count: 25
+  source: https://portal.tcs.taranawireless.com/operator-portal/common-config.js
+  categories:
+  - power-loss
+  - reboot-auto-recovery
+  - reboot-user
+  - unknown
+  note: Delivered on the rebootReason webhook field.
+audit_events:
+  count: 326
+  distinct_types: 46
+  categories:
+  - name: NETWORK
+    display: Network
+    count: 121
+  - name: ALARM
+    display: Alarm
+    count: 7
+  - name: OPERATIONS
+    display: Operations
+    count: 64
+  - name: SPECTRUM
+    display: Spectrum
+    count: 57
+  - name: ADMIN
+    display: Admin
+    count: 37
+  - name: CONFIG
+    display: Config
+    count: 40
+  note: The TCS event log vocabulary. Fully enumerated in asyncapi/tarana-wireless-webhooks.yml.
