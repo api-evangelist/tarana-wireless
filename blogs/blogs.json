@@ -1,0 +1,18 @@
+{
+  "repo": "tarana-wireless",
+  "feeds": [
+    {
+      "source": "https://portal.tcs.taranawireless.com/",
+      "feed_url": "https://portal.tcs.taranawireless.com/",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    },
+    {
+      "source": "https://www.taranawireless.com/blog/",
+      "error": "HTTPError"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-08-30T22:33:40Z"
+}
