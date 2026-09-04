@@ -14,6 +14,20 @@ description: >-
   dial-out streaming telemetry from the radios. The northbound API reference is published as
   a Swagger UI inside the operator portal and requires an authenticated TCS tenant, so the
   machine-readable contract is not publicly retrievable.
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  - rate-limits
+  - security
+  generated: '2026-09-02'
+  method: derived
 image: https://taranawireless.com/wp-content/uploads/2022/03/Tarana-Logo-Horizontal-no-Tagline-White.svg
 url: https://raw.githubusercontent.com/api-evangelist/tarana-wireless/refs/heads/main/apis.yml
 x-type: company
