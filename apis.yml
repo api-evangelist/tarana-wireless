@@ -36,7 +36,7 @@ x-tier: profiled
 x-tier-reason: enrichment
 specificationVersion: '0.20'
 created: '2026-08-29'
-modified: '2026-08-29'
+modified: '2026-10-06'
 tags:
 - Company
 - Networking
@@ -91,6 +91,10 @@ apis:
   - type: RateLimits
     url: rate-limits/tarana-wireless-rate-limits.yml
 common:
+- url: https://taranawireless.com/blog/
+  type: Blog
+- url: https://taranawireless.com/feed/
+  type: BlogRSS
 - type: DomainSecurity
   url: security/tarana-wireless-domain-security.yml
 - type: Website
